@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TempMail44 - Telegram Mini App</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TempMail44 - Temporary Email Manager</title>
     <style>
         * {
             margin: 0;
@@ -14,232 +13,177 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--tg-theme-bg-color, #f5f5f5);
-            color: var(--tg-theme-text-color, #000);
-            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            padding: 20px;
         }
         
         .container {
-            max-width: 600px;
+            max-width: 900px;
             margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         
-        .card {
-            background: var(--tg-theme-secondary-bg-color, #fff);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-        
-        .card-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: var(--tg-theme-text-color, #000);
-        }
-        
-        .email-builder {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .input-group {
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            background: var(--tg-theme-bg-color, #f5f5f5);
-            border-radius: 10px;
-            padding: 4px 12px;
+            gap: 10px;
         }
         
-        .input-group input {
-            flex: 1;
-            padding: 12px 0;
-            border: none;
-            background: transparent;
-            font-size: 16px;
-            color: var(--tg-theme-text-color, #000);
-            outline: none;
-        }
-        
-        .input-group input::placeholder {
-            color: var(--tg-theme-hint-color, #999);
-        }
-        
-        .input-group span {
-            color: var(--tg-theme-hint-color, #999);
-            font-size: 18px;
-        }
-        
-        .domain-select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--tg-theme-hint-color, #ddd);
-            border-radius: 10px;
-            background: var(--tg-theme-bg-color, #fff);
-            color: var(--tg-theme-text-color, #000);
-            font-size: 16px;
-            outline: none;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-        }
-        
-        .btn {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
+        .api-status {
+            padding: 10px 15px;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #2e7d32;
             font-weight: 500;
-            cursor: pointer;
-            transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
-        .btn:active {
-            opacity: 0.8;
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #4CAF50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
         }
         
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
         }
         
-        .btn-primary {
-            background: var(--tg-theme-button-color, #3390ec);
-            color: var(--tg-theme-button-text-color, #fff);
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 25px;
         }
         
-        .btn-secondary {
-            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
-            color: var(--tg-theme-text-color, #000);
-        }
-        
-        .btn-danger {
-            background: #ff3b30;
+        button {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
-        .current-email {
-            background: var(--tg-theme-button-color, #3390ec);
-            color: var(--tg-theme-button-text-color, #fff);
-            padding: 16px;
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        button.danger {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        }
+        
+        button.success {
+            background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+        }
+        
+        button.info {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+        }
+        
+        .email-display {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            padding: 20px;
             border-radius: 10px;
-            margin-bottom: 16px;
+            margin-bottom: 25px;
+            border: 2px dashed #667eea;
         }
         
-        .email-label {
-            font-size: 12px;
-            opacity: 0.8;
-            margin-bottom: 4px;
+        .email-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
         }
         
         .email-address {
-            font-size: 20px;
-            font-weight: 600;
+            font-size: 28px;
+            font-family: 'Courier New', monospace;
+            color: #667eea;
+            margin: 10px 0;
             word-break: break-all;
-            margin-bottom: 12px;
-            font-family: monospace;
-        }
-        
-        .email-actions {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .email-actions .btn {
-            padding: 10px;
-            font-size: 14px;
-            background: rgba(255,255,255,0.2);
-            color: white;
-        }
-        
-        .email-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255,255,255,0.2);
-        }
-        
-        .info-item {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .info-label {
-            font-size: 11px;
-            opacity: 0.7;
-        }
-        
-        .info-value {
-            font-size: 14px;
-            font-weight: 500;
+            font-weight: bold;
         }
         
         .messages-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 15px;
         }
         
         .message-count {
-            background: var(--tg-theme-button-color, #3390ec);
-            color: var(--tg-theme-button-text-color, #fff);
-            padding: 4px 10px;
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
             border-radius: 20px;
             font-size: 14px;
-        }
-        
-        .message-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+            font-weight: 500;
         }
         
         .message-item {
-            background: var(--tg-theme-bg-color, #f9f9f9);
+            background: white;
+            border: 2px solid #f0f0f0;
+            padding: 15px;
+            margin-bottom: 12px;
             border-radius: 10px;
-            padding: 12px;
             cursor: pointer;
-            transition: all 0.2s;
-            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .message-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: #667eea;
         }
         
         .message-item.unread {
-            border-left-color: var(--tg-theme-button-color, #3390ec);
-            background: var(--tg-theme-secondary-bg-color, #fff);
+            border-left: 4px solid #667eea;
+            background: #f8f9ff;
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
         }
         
         .message-subject {
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: var(--tg-theme-text-color, #000);
+            font-weight: bold;
+            color: #333;
+            font-size: 16px;
         }
         
         .message-from {
-            font-size: 13px;
-            color: var(--tg-theme-hint-color, #666);
-            margin-bottom: 2px;
+            color: #666;
+            font-size: 14px;
         }
         
         .message-time {
-            font-size: 11px;
-            color: var(--tg-theme-hint-color, #999);
+            color: #999;
+            font-size: 12px;
         }
         
         .message-content {
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid var(--tg-theme-hint-color, #ddd);
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
             display: none;
         }
         
@@ -248,205 +192,268 @@
         }
         
         .message-body {
-            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
-            padding: 12px;
+            background: #f9f9f9;
+            padding: 15px;
             border-radius: 8px;
-            font-size: 14px;
-            max-height: 300px;
+            margin-bottom: 10px;
+            max-height: 400px;
             overflow-y: auto;
-            margin-bottom: 12px;
         }
         
-        .attachments {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-bottom: 12px;
-        }
-        
-        .attachment-link {
-            display: block;
-            padding: 10px;
-            background: var(--tg-theme-button-color, #3390ec);
-            color: var(--tg-theme-button-text-color, #fff);
-            text-decoration: none;
+        .attachment {
+            display: inline-block;
+            margin: 5px 5px 5px 0;
+            padding: 8px 12px;
+            background: #f0f0f0;
             border-radius: 8px;
+            color: #667eea;
+            text-decoration: none;
             font-size: 14px;
-            text-align: center;
+            transition: all 0.2s;
+        }
+        
+        .attachment:hover {
+            background: #e0e0e0;
         }
         
         .delete-message-btn {
-            width: 100%;
-            padding: 10px;
-            background: #ff3b30;
+            background: #f44336;
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 14px;
+            padding: 8px 15px;
+            border-radius: 5px;
             cursor: pointer;
-        }
-        
-        .delete-email-section {
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--tg-theme-hint-color, #ddd);
+            margin-top: 10px;
+            font-size: 14px;
         }
         
         .loading {
+            display: none;
             text-align: center;
-            padding: 20px;
-            color: var(--tg-theme-hint-color, #999);
+            padding: 40px;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .domain-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        
+        .domain-item {
+            padding: 10px;
+            background: #f8f9ff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .domain-type {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 5px;
+            font-weight: 500;
+        }
+        
+        .type-free {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .type-premium {
+            background: #FF9800;
+            color: white;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #333;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            display: none;
+            animation: slideIn 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            font-weight: 500;
+        }
+        
+        @keyframes slideIn {
+            from { 
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to { 
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
         
         .empty-state {
             text-align: center;
-            padding: 40px 20px;
-            color: var(--tg-theme-hint-color, #999);
+            padding: 40px;
+            color: #999;
         }
         
         .empty-state-icon {
             font-size: 48px;
-            margin-bottom: 16px;
+            margin-bottom: 15px;
         }
         
-        .error-message {
-            background: #ff3b3020;
-            color: #ff3b30;
+        .create-section {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .email-builder {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .email-builder input {
+            flex: 1;
+            min-width: 200px;
             padding: 12px;
+            border: 2px solid #e0e0e0;
             border-radius: 8px;
-            margin-bottom: 12px;
             font-size: 14px;
         }
         
-        .success-message {
-            background: #34c75920;
-            color: #34c759;
+        .email-builder select {
             padding: 12px;
+            border: 2px solid #e0e0e0;
             border-radius: 8px;
-            margin-bottom: 12px;
             font-size: 14px;
+            background: white;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Create Email Card -->
-        <div class="card">
-            <div class="card-title">📧 Create Temporary Email</div>
+        <h1>
+            <span>📧</span>
+            TempMail44 Manager
+        </h1>
+        
+        <div class="api-status">
+            <span class="status-dot"></span>
+            ✅ API Connected and Ready
+        </div>
+        
+        <div class="create-section">
+            <h3>✨ Create New Email</h3>
             <div class="email-builder">
-                <div class="input-group">
-                    <input type="text" 
-                           id="emailName" 
-                           placeholder="Username (optional)"
-                           pattern="[a-zA-Z0-9._-]+"
-                           autocomplete="off">
-                    <span>@</span>
-                </div>
-                <select class="domain-select" id="domainSelect">
+                <input type="text" id="emailName" placeholder="Username (optional)" pattern="[a-zA-Z0-9._-]+">
+                <span style="align-self: center; font-size: 18px;">@</span>
+                <select id="domainSelect">
                     <option value="">Loading domains...</option>
                 </select>
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="createCustomEmail()">
-                        ✨ Create
-                    </button>
-                    <button class="btn btn-secondary" onclick="createRandomEmail()">
-                        🎲 Random
-                    </button>
-                </div>
+                <button onclick="createCustomEmail()" class="success">Create Email</button>
+                <button onclick="createRandomEmail()">🎲 Random</button>
             </div>
         </div>
         
-        <!-- Current Email Card -->
-        <div class="current-email" id="currentEmailCard" style="display: none;">
-            <div class="email-label">Current Email</div>
-            <div class="email-address" id="currentEmailDisplay"></div>
-            <div class="email-actions">
-                <button class="btn" onclick="copyEmail()">📋 Copy</button>
-                <button class="btn" onclick="refreshMessages()">🔄 Refresh</button>
-            </div>
-            <div class="email-info" id="emailInfo"></div>
-            <div class="delete-email-section">
-                <button class="btn btn-danger" onclick="deleteCurrentEmail()">
-                    🗑️ Delete This Email
-                </button>
-            </div>
+        <div class="controls">
+            <button onclick="fetchDomains()" class="success">🌐 List Domains</button>
+            <button onclick="checkMessages()" class="info">📨 Check Messages</button>
+            <button onclick="refreshMessages()" class="info">🔄 Refresh</button>
+            <button onclick="deleteEmail()" class="danger">🗑️ Delete Email</button>
         </div>
         
-        <!-- Messages Card -->
-        <div class="card">
+        <div class="email-display" id="emailDisplay" style="display: none;">
+            <div class="email-header">
+                <h3>📧 Current Email</h3>
+                <button onclick="copyEmail()" class="success" style="padding: 8px 15px;">📋 Copy</button>
+            </div>
+            <div class="email-address" id="currentEmail"></div>
+            <div id="emailInfo"></div>
+        </div>
+        
+        <div class="domain-list" id="domainList" style="display: none;"></div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+        
+        <div class="messages-list">
             <div class="messages-header">
-                <div class="card-title" style="margin: 0;">📨 Inbox</div>
-                <span class="message-count" id="messageCount">0</span>
+                <h3>📨 Inbox</h3>
+                <span class="message-count" id="messageCount">0 messages</span>
             </div>
-            <div id="messagesContainer">
-                <div class="empty-state">
-                    <div class="empty-state-icon">📭</div>
-                    <p>No active email</p>
-                    <p style="font-size: 14px; margin-top: 8px;">Create an email to start receiving messages</p>
-                </div>
-            </div>
+            <div id="messagesList"></div>
         </div>
     </div>
+    
+    <div class="toast" id="toast"></div>
 
     <script>
-        // Initialize Telegram Mini App
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
-        
-        // Apply theme colors
-        document.documentElement.style.setProperty('--tg-theme-bg-color', tg.backgroundColor || '#f5f5f5');
-        document.documentElement.style.setProperty('--tg-theme-text-color', tg.textColor || '#000000');
-        document.documentElement.style.setProperty('--tg-theme-hint-color', tg.hintColor || '#999999');
-        document.documentElement.style.setProperty('--tg-theme-button-color', tg.buttonColor || '#3390ec');
-        document.documentElement.style.setProperty('--tg-theme-button-text-color', tg.buttonTextColor || '#ffffff');
-        document.documentElement.style.setProperty('--tg-theme-secondary-bg-color', tg.secondaryBackgroundColor || '#ffffff');
-        
-        // Configuration
+        // API Configuration
         const API_BASE = 'https://tempmail44.com/api';
         const API_KEY = 'SkJvIxz4zvie2sPd4x27AKuHcgDo2d';
         
         // State
-        let currentEmail = null;
-        let emailData = null;
+        let currentEmail = localStorage.getItem('tempEmail');
+        let emailData = JSON.parse(localStorage.getItem('tempEmailData') || 'null');
         let domains = [];
-        let refreshInterval = null;
         
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             loadDomains();
-            loadSavedEmail();
-            setupMainButton();
+            if (currentEmail && emailData) {
+                displayCurrentEmail();
+                checkMessages();
+            }
         });
         
-        function setupMainButton() {
-            if (currentEmail) {
-                tg.MainButton.setText('📨 Check Messages')
-                    .show()
-                    .onClick(refreshMessages);
-            } else {
-                tg.MainButton.setText('✨ Create New Email')
-                    .show()
-                    .onClick(() => {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    });
-            }
+        function showLoading() {
+            document.getElementById('loading').classList.add('active');
         }
         
-        function showNotification(message, isError = false) {
-            if (isError) {
-                tg.showPopup({
-                    title: 'Error',
-                    message: message,
-                    buttons: [{ type: 'ok' }]
-                });
-            } else {
-                tg.showPopup({
-                    title: 'Success',
-                    message: message,
-                    buttons: [{ type: 'ok' }]
-                });
-            }
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('active');
+        }
+        
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.background = isError ? '#f44336' : '#333';
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
         }
         
         async function loadDomains() {
@@ -460,67 +467,68 @@
                     select.innerHTML = '';
                     
                     const freeDomains = domains.filter(d => d.type === 'Free');
-                    const premiumDomains = domains.filter(d => d.type === 'Premium');
                     
                     if (freeDomains.length > 0) {
-                        const group = document.createElement('optgroup');
-                        group.label = 'Free Domains';
                         freeDomains.forEach(domain => {
                             const option = document.createElement('option');
                             option.value = domain.domain;
                             option.textContent = domain.domain;
-                            group.appendChild(option);
+                            select.appendChild(option);
                         });
-                        select.appendChild(group);
                     }
                     
-                    if (premiumDomains.length > 0) {
-                        const group = document.createElement('optgroup');
-                        group.label = 'Premium Domains';
-                        premiumDomains.forEach(domain => {
-                            const option = document.createElement('option');
-                            option.value = domain.domain;
-                            option.textContent = domain.domain;
-                            group.appendChild(option);
-                        });
-                        select.appendChild(group);
-                    }
-                    
-                    // Select first free domain by default
                     if (freeDomains.length > 0) {
                         select.value = freeDomains[0].domain;
                     }
                 }
             } catch (error) {
                 console.error('Failed to load domains:', error);
-                document.getElementById('domainSelect').innerHTML = '<option value="">Failed to load domains</option>';
             }
         }
         
-        function loadSavedEmail() {
-            const saved = tg.initDataUnsafe?.user?.id 
-                ? localStorage.getItem(`tempmail_${tg.initDataUnsafe.user.id}`)
-                : localStorage.getItem('tempmail_current_email');
+        async function fetchDomains() {
+            showLoading();
+            
+            try {
+                const response = await fetch(`${API_BASE}/domains/${API_KEY}/all`);
+                const data = await response.json();
                 
-            if (saved) {
-                try {
-                    emailData = JSON.parse(saved);
-                    currentEmail = emailData.email;
-                    displayCurrentEmail();
-                    refreshMessages();
-                } catch (e) {
-                    console.error('Failed to load saved email');
+                if (response.ok && data.status && data.data.domains) {
+                    const domains = data.data.domains;
+                    const domainList = document.getElementById('domainList');
+                    
+                    const freeDomains = domains.filter(d => d.type === 'Free');
+                    const premiumDomains = domains.filter(d => d.type === 'Premium');
+                    
+                    let html = '<h3>Available Domains:</h3>';
+                    
+                    if (freeDomains.length > 0) {
+                        html += '<h4 style="margin: 15px 0 10px 0; color: #4CAF50;">Free Domains</h4>';
+                        freeDomains.forEach(domain => {
+                            html += `<div class="domain-item">${domain.domain} <span class="domain-type type-free">FREE</span></div>`;
+                        });
+                    }
+                    
+                    if (premiumDomains.length > 0) {
+                        html += '<h4 style="margin: 15px 0 10px 0; color: #FF9800;">Premium Domains</h4>';
+                        premiumDomains.forEach(domain => {
+                            html += `<div class="domain-item">${domain.domain} <span class="domain-type type-premium">PREMIUM</span></div>`;
+                        });
+                    }
+                    
+                    domainList.innerHTML = html;
+                    domainList.style.display = 'grid';
+                    
+                    showToast(`Loaded ${domains.length} domains`);
+                } else {
+                    throw new Error(data.message || 'Failed to load domains');
                 }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to load domains: ' + error.message, true);
             }
-        }
-        
-        function saveEmailData() {
-            if (emailData) {
-                const key = tg.initDataUnsafe?.user?.id 
-                    ? `tempmail_${tg.initDataUnsafe.user.id}`
-                    : 'tempmail_current_email';
-                localStorage.setItem(key, JSON.stringify(emailData));
-            }
+            
+            hideLoading();
         }
         
         function generateRandomString(length = 10) {
@@ -542,362 +550,332 @@
             const domain = document.getElementById('domainSelect').value;
             
             if (!domain) {
-                tg.HapticFeedback.notification('error');
-                showNotification('Please select a domain', true);
+                showToast('Please select a domain', true);
                 return;
             }
             
-            // Validate username if provided
-            if (username && !/^[a-zA-Z0-9._-]+$/.test(username)) {
-                tg.HapticFeedback.notification('error');
-                showNotification('Username can only contain letters, numbers, dots, underscores, and hyphens', true);
-                return;
-            }
-            
-            const btn = event.target;
-            btn.disabled = true;
-            btn.textContent = 'Creating...';
-            
-            tg.HapticFeedback.impact('light');
+            showLoading();
             
             try {
-                let response, data;
+                // Step 1: Create email
+                const createResponse = await fetch(`${API_BASE}/emails/${API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
                 
+                const createData = await createResponse.json();
+                
+                if (!createResponse.ok || !createData.status) {
+                    throw new Error(createData.message || 'Failed to create email');
+                }
+                
+                let finalData = createData.data;
+                
+                // Step 2: Update if username provided
                 if (username) {
-                    // Create with custom username
-                    const tempEmail = `${username}@${domain}`;
-                    response = await fetch(`${API_BASE}/emails/${API_KEY}`, {
-                        method: 'POST'
-                    });
-                    data = await response.json();
+                    const currentEmail = finalData.email;
+                    const updateResponse = await fetch(
+                        `${API_BASE}/emails/${API_KEY}/${currentEmail}/${username}/${domain}`,
+                        { method: 'POST' }
+                    );
                     
-                    if (data.status) {
-                        const currentTempEmail = data.data.email;
-                        // Update to custom email
-                        const updateResponse = await fetch(
-                            `${API_BASE}/emails/${API_KEY}/${currentTempEmail}/${username}/${domain}`,
-                            { method: 'POST' }
-                        );
-                        const updateData = await updateResponse.json();
-                        
-                        if (updateData.status) {
-                            emailData = updateData.data;
-                            currentEmail = emailData.email;
-                        } else {
-                            emailData = data.data;
-                            currentEmail = emailData.email;
-                        }
-                    }
-                } else {
-                    // Create random email
-                    response = await fetch(`${API_BASE}/emails/${API_KEY}`, {
-                        method: 'POST'
-                    });
-                    data = await response.json();
+                    const updateData = await updateResponse.json();
                     
-                    if (data.status) {
-                        emailData = data.data;
-                        currentEmail = emailData.email;
+                    if (updateResponse.ok && updateData.status) {
+                        finalData = updateData.data;
                     }
                 }
                 
-                if (data && data.status) {
-                    saveEmailData();
-                    displayCurrentEmail();
-                    refreshMessages();
-                    setupMainButton();
-                    
-                    tg.HapticFeedback.notification('success');
-                    showNotification('Email created successfully!');
-                    
-                    // Clear input
-                    document.getElementById('emailName').value = '';
-                } else {
-                    throw new Error(data.message || 'Failed to create email');
-                }
+                emailData = finalData;
+                currentEmail = finalData.email;
+                
+                localStorage.setItem('tempEmail', currentEmail);
+                localStorage.setItem('tempEmailData', JSON.stringify(emailData));
+                
+                displayCurrentEmail();
+                document.getElementById('emailName').value = '';
+                showToast('✅ Email created successfully!');
+                
+                // Auto-check messages
+                setTimeout(() => checkMessages(), 1000);
+                
             } catch (error) {
-                console.error('Error creating email:', error);
-                tg.HapticFeedback.notification('error');
-                showNotification('Failed to create email. Please try again.', true);
-            } finally {
-                btn.disabled = false;
-                btn.textContent = '✨ Create';
+                console.error('Create error:', error);
+                showToast('Failed to create email: ' + error.message, true);
             }
+            
+            hideLoading();
+        }
+        
+        // Legacy create function for compatibility
+        async function createEmail() {
+            document.getElementById('emailName').value = '';
+            await createCustomEmail();
         }
         
         function displayCurrentEmail() {
-            const card = document.getElementById('currentEmailCard');
-            const display = document.getElementById('currentEmailDisplay');
-            const info = document.getElementById('emailInfo');
+            const display = document.getElementById('emailDisplay');
+            document.getElementById('currentEmail').textContent = currentEmail;
             
-            display.textContent = currentEmail;
+            const expireDate = emailData?.expire_at ? new Date(emailData.expire_at).toLocaleString() : 'Unknown';
+            const createdDate = emailData?.created_at ? new Date(emailData.created_at).toLocaleString() : 'Unknown';
             
-            const expireDate = emailData.expire_at 
-                ? new Date(emailData.expire_at).toLocaleString()
-                : 'Unknown';
-            const createdDate = emailData.created_at
-                ? new Date(emailData.created_at).toLocaleString()
-                : 'Unknown';
-            
-            info.innerHTML = `
-                <div class="info-item">
-                    <span class="info-label">Expires</span>
-                    <span class="info-value">${expireDate}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Domain</span>
-                    <span class="info-value">${emailData.domain || 'N/A'}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Created</span>
-                    <span class="info-value">${createdDate}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Status</span>
-                    <span class="info-value">✅ Active</span>
+            document.getElementById('emailInfo').innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div><strong>⏰ Expires:</strong><br>${expireDate}</div>
+                    <div><strong>📅 Created:</strong><br>${createdDate}</div>
+                    <div><strong>🌐 Domain:</strong><br>${emailData?.domain || 'Unknown'}</div>
+                    <div><strong>🔑 Token:</strong><br>${emailData?.email_token ? 'Available' : 'N/A'}</div>
                 </div>
             `;
-            
-            card.style.display = 'block';
+            display.style.display = 'block';
         }
         
-        async function refreshMessages() {
+        async function checkMessages() {
             if (!currentEmail) {
-                showNotification('No active email', true);
+                showToast('Please create an email first', true);
                 return;
             }
             
-            const container = document.getElementById('messagesContainer');
-            container.innerHTML = '<div class="loading">Loading messages...</div>';
+            showLoading();
             
             try {
-                const response = await fetch(`${API_BASE}/messages/${API_KEY}/${currentEmail}`);
+                const url = `${API_BASE}/messages/${API_KEY}/${currentEmail}`;
+                console.log('Checking messages:', url);
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
+                console.log('Messages response:', data);
                 
                 if (data.status) {
-                    displayMessages(data.messages || []);
-                    document.getElementById('messageCount').textContent = data.messages?.length || 0;
+                    const messages = data.messages || [];
+                    displayMessages(messages);
+                    document.getElementById('messageCount').textContent = `${messages.length} message${messages.length !== 1 ? 's' : ''}`;
+                    
+                    if (messages.length > 0) {
+                        showToast(`📬 ${messages.length} message${messages.length !== 1 ? 's' : ''} found`);
+                    }
                 } else {
-                    throw new Error('Failed to fetch messages');
+                    throw new Error(data.message || 'Failed to fetch messages');
                 }
             } catch (error) {
-                console.error('Error fetching messages:', error);
-                container.innerHTML = `
+                console.error('Check messages error:', error);
+                showToast('Error: ' + error.message, true);
+                
+                // Show empty state on error
+                document.getElementById('messagesList').innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">❌</div>
                         <p>Failed to load messages</p>
-                        <button class="btn btn-primary" onclick="refreshMessages()" style="margin-top: 16px;">
-                            Try Again
-                        </button>
+                        <p style="font-size: 14px; margin-top: 10px;">${error.message}</p>
+                        <button onclick="checkMessages()" style="margin-top: 15px;">Try Again</button>
                     </div>
                 `;
             }
+            
+            hideLoading();
         }
         
         function displayMessages(messages) {
-            const container = document.getElementById('messagesContainer');
+            const container = document.getElementById('messagesList');
             
-            if (messages.length === 0) {
+            if (!messages || messages.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">📭</div>
                         <p>No messages yet</p>
-                        <p style="font-size: 14px; margin-top: 8px;">Messages will appear here</p>
+                        <p style="font-size: 14px; margin-top: 10px;">Messages will appear here automatically</p>
                     </div>
                 `;
                 return;
             }
             
-            container.innerHTML = '<div class="message-list"></div>';
-            const list = container.querySelector('.message-list');
-            
             messages.sort((a, b) => new Date(b.receivedAt) - new Date(a.receivedAt));
             
+            container.innerHTML = '';
+            
             messages.forEach(msg => {
-                const item = document.createElement('div');
-                item.className = `message-item ${!msg.is_seen ? 'unread' : ''}`;
-                item.dataset.messageId = msg.id;
+                const div = document.createElement('div');
+                div.className = `message-item ${!msg.is_seen ? 'unread' : ''}`;
+                div.onclick = function(e) {
+                    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A') return;
+                    
+                    this.classList.toggle('expanded');
+                    if (this.classList.contains('expanded')) {
+                        loadMessageContent(msg.id, this);
+                    }
+                };
                 
                 const date = msg.receivedAt ? new Date(msg.receivedAt).toLocaleString() : 'Unknown';
                 
-                item.innerHTML = `
-                    <div class="message-subject">${msg.subject || '(No Subject)'}</div>
-                    <div class="message-from">From: ${msg.from || 'Unknown'} ${msg.from_email ? `&lt;${msg.from_email}&gt;` : ''}</div>
-                    <div class="message-time">${date}</div>
-                    <div class="message-content" id="msg-content-${msg.id}">
-                        <div class="loading">Loading content...</div>
+                div.innerHTML = `
+                    <div class="message-header">
+                        <span class="message-subject">
+                            ${!msg.is_seen ? '🔵' : '📨'} ${msg.subject || 'No Subject'}
+                        </span>
+                        <span class="message-time">${date}</span>
+                    </div>
+                    <div class="message-from">
+                        From: ${msg.from || 'Unknown'} ${msg.from_email ? `<${msg.from_email}>` : ''}
+                    </div>
+                    <div class="message-content" id="msg-${msg.id}">
+                        <div style="text-align: center; padding: 20px;">
+                            <div class="spinner" style="width: 30px; height: 30px;"></div>
+                        </div>
                     </div>
                 `;
                 
-                item.addEventListener('click', async function(e) {
-                    if (!this.classList.contains('expanded')) {
-                        this.classList.add('expanded');
-                        await loadMessageContent(msg.id);
-                        tg.HapticFeedback.impact('light');
-                    } else {
-                        this.classList.remove('expanded');
-                    }
-                });
-                
-                list.appendChild(item);
+                container.appendChild(div);
             });
         }
         
-        async function loadMessageContent(messageId) {
-            const contentDiv = document.getElementById(`msg-content-${messageId}`);
+        async function loadMessageContent(messageId, element) {
+            const contentDiv = element.querySelector(`#msg-${messageId}`);
             
             if (contentDiv.dataset.loaded) return;
             
             try {
                 const response = await fetch(`${API_BASE}/messages/${API_KEY}/message/${messageId}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
                 
-                if (data.status) {
+                if (data.status && data.data) {
                     const msg = data.data;
+                    let html = `<div class="message-body">`;
                     
-                    let html = `
-                        <div class="message-body">
-                            ${msg.html ? msg.content : msg.content.replace(/\n/g, '<br>')}
-                        </div>
-                    `;
+                    if (msg.html) {
+                        html += msg.content;
+                    } else {
+                        html += (msg.content || 'No content').replace(/\n/g, '<br>');
+                    }
+                    
+                    html += '</div>';
                     
                     if (msg.attachments && msg.attachments.length > 0) {
-                        html += '<div class="attachments">';
+                        html += '<div style="margin-top: 10px;"><strong>📎 Attachments:</strong><br>';
                         msg.attachments.forEach(att => {
-                            html += `
-                                <a href="${att.url}" target="_blank" class="attachment-link">
-                                    📎 Download ${att.name} (${(att.size / 1024).toFixed(2)} KB)
-                                </a>
-                            `;
+                            html += `<a href="${att.url}" target="_blank" class="attachment">📎 ${att.name} (${(att.size / 1024).toFixed(2)} KB)</a>`;
                         });
                         html += '</div>';
                     }
                     
-                    html += `
-                        <button class="delete-message-btn" onclick="deleteMessage('${messageId}', event)">
-                            🗑️ Delete This Message
-                        </button>
-                    `;
+                    html += `<button class="delete-message-btn" onclick="deleteMessage('${messageId}', event)">🗑️ Delete Message</button>`;
                     
                     contentDiv.innerHTML = html;
                     contentDiv.dataset.loaded = 'true';
+                } else {
+                    throw new Error(data.message || 'Failed to load message');
                 }
             } catch (error) {
-                console.error('Error loading message:', error);
-                contentDiv.innerHTML = '<p style="color: #ff3b30;">Failed to load message content</p>';
+                console.error('Load message error:', error);
+                contentDiv.innerHTML = `<p style="color: #f44336;">Error: ${error.message}</p>`;
             }
         }
         
         async function deleteMessage(messageId, event) {
             event.stopPropagation();
             
-            tg.showPopup({
-                title: 'Delete Message',
-                message: 'Are you sure you want to delete this message?',
-                buttons: [
-                    { type: 'cancel', text: 'Cancel' },
-                    { type: 'destructive', text: 'Delete' }
-                ]
-            }, async (buttonId) => {
-                if (buttonId === 'destructive') {
-                    try {
-                        const response = await fetch(`${API_BASE}/messages/${API_KEY}/message/${messageId}`, {
-                            method: 'POST'
-                        });
-                        const data = await response.json();
-                        
-                        if (data.status) {
-                            tg.HapticFeedback.notification('success');
-                            showNotification('Message deleted');
-                            refreshMessages();
-                        } else {
-                            throw new Error('Failed to delete message');
-                        }
-                    } catch (error) {
-                        console.error('Error deleting message:', error);
-                        tg.HapticFeedback.notification('error');
-                        showNotification('Failed to delete message', true);
-                    }
+            if (!confirm('Delete this message?')) return;
+            
+            showLoading();
+            
+            try {
+                const response = await fetch(`${API_BASE}/messages/${API_KEY}/message/${messageId}`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.status) {
+                    showToast('✅ Message deleted');
+                    await checkMessages();
+                } else {
+                    throw new Error(data.message || 'Failed to delete message');
                 }
-            });
+            } catch (error) {
+                console.error('Delete message error:', error);
+                showToast('Error: ' + error.message, true);
+            }
+            
+            hideLoading();
         }
         
-        async function deleteCurrentEmail() {
-            if (!currentEmail) return;
+        async function refreshMessages() {
+            await checkMessages();
+        }
+        
+        async function deleteEmail() {
+            if (!currentEmail) {
+                showToast('No active email', true);
+                return;
+            }
             
-            tg.showPopup({
-                title: 'Delete Email',
-                message: 'Are you sure you want to delete this email address? All messages will be permanently lost.',
-                buttons: [
-                    { type: 'cancel', text: 'Cancel' },
-                    { type: 'destructive', text: 'Delete' }
-                ]
-            }, async (buttonId) => {
-                if (buttonId === 'destructive') {
-                    try {
-                        const response = await fetch(`${API_BASE}/emails/${API_KEY}/${currentEmail}`, {
-                            method: 'POST'
-                        });
-                        const data = await response.json();
-                        
-                        if (data.status) {
-                            // Clear saved data
-                            const key = tg.initDataUnsafe?.user?.id 
-                                ? `tempmail_${tg.initDataUnsafe.user.id}`
-                                : 'tempmail_current_email';
-                            localStorage.removeItem(key);
-                            
-                            currentEmail = null;
-                            emailData = null;
-                            
-                            document.getElementById('currentEmailCard').style.display = 'none';
-                            document.getElementById('messagesContainer').innerHTML = `
-                                <div class="empty-state">
-                                    <div class="empty-state-icon">📭</div>
-                                    <p>Email deleted</p>
-                                    <p style="font-size: 14px; margin-top: 8px;">Create a new email to continue</p>
-                                </div>
-                            `;
-                            document.getElementById('messageCount').textContent = '0';
-                            
-                            setupMainButton();
-                            tg.HapticFeedback.notification('success');
-                            showNotification('Email deleted successfully');
-                        } else {
-                            throw new Error('Failed to delete email');
-                        }
-                    } catch (error) {
-                        console.error('Error deleting email:', error);
-                        tg.HapticFeedback.notification('error');
-                        showNotification('Failed to delete email', true);
-                    }
+            if (!confirm('Delete this email address? All messages will be lost.')) return;
+            
+            showLoading();
+            
+            try {
+                const response = await fetch(`${API_BASE}/emails/${API_KEY}/${currentEmail}`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.status) {
+                    localStorage.removeItem('tempEmail');
+                    localStorage.removeItem('tempEmailData');
+                    currentEmail = null;
+                    emailData = null;
+                    
+                    document.getElementById('emailDisplay').style.display = 'none';
+                    document.getElementById('messagesList').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📭</div>
+                            <p>Email deleted</p>
+                            <p style="font-size: 14px; margin-top: 10px;">Create a new email to continue</p>
+                        </div>
+                    `;
+                    document.getElementById('messageCount').textContent = '0 messages';
+                    
+                    showToast('✅ Email deleted successfully');
+                } else {
+                    throw new Error(data.message || 'Failed to delete email');
                 }
-            });
+            } catch (error) {
+                console.error('Delete email error:', error);
+                showToast('Error: ' + error.message, true);
+            }
+            
+            hideLoading();
         }
         
         function copyEmail() {
+            if (!currentEmail) {
+                showToast('No email to copy', true);
+                return;
+            }
+            
             navigator.clipboard.writeText(currentEmail).then(() => {
-                tg.HapticFeedback.notification('success');
-                showNotification('Email copied to clipboard!');
+                showToast('✅ Email copied to clipboard!');
             }).catch(() => {
-                // Fallback
-                const input = document.createElement('input');
-                input.value = currentEmail;
-                document.body.appendChild(input);
-                input.select();
+                const textarea = document.createElement('textarea');
+                textarea.value = currentEmail;
+                document.body.appendChild(textarea);
+                textarea.select();
                 document.execCommand('copy');
-                document.body.removeChild(input);
-                tg.HapticFeedback.notification('success');
-                showNotification('Email copied to clipboard!');
+                document.body.removeChild(textarea);
+                showToast('✅ Email copied to clipboard!');
             });
         }
-        
-        // Auto-refresh every 15 seconds
-        setInterval(() => {
-            if (currentEmail) {
-                refreshMessages();
-            }
-        }, 15000);
     </script>
 </body>
 </html>
