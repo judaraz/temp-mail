@@ -86,6 +86,11 @@
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
         
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
         button.danger {
             background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
         }
@@ -198,6 +203,7 @@
             margin-bottom: 10px;
             max-height: 400px;
             overflow-y: auto;
+            word-break: break-word;
         }
         
         .attachment {
@@ -340,6 +346,7 @@
             gap: 10px;
             margin-top: 15px;
             flex-wrap: wrap;
+            align-items: center;
         }
         
         .email-builder input {
@@ -357,6 +364,18 @@
             border-radius: 8px;
             font-size: 14px;
             background: white;
+            min-width: 200px;
+            cursor: pointer;
+        }
+        
+        .email-builder select:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+        }
+        
+        .email-builder span {
+            font-size: 18px;
+            color: #666;
         }
     </style>
 </head>
@@ -367,26 +386,26 @@
             TempMail44 Manager
         </h1>
         
-        <div class="api-status">
+        <div class="api-status" id="apiStatus">
             <span class="status-dot"></span>
-            ✅ API Connected and Ready
+            <span id="statusText">Loading domains...</span>
         </div>
         
         <div class="create-section">
             <h3>✨ Create New Email</h3>
             <div class="email-builder">
                 <input type="text" id="emailName" placeholder="Username (optional)" pattern="[a-zA-Z0-9._-]+">
-                <span style="align-self: center; font-size: 18px;">@</span>
-                <select id="domainSelect">
+                <span>@</span>
+                <select id="domainSelect" disabled>
                     <option value="">Loading domains...</option>
                 </select>
-                <button onclick="createCustomEmail()" class="success">Create Email</button>
-                <button onclick="createRandomEmail()">🎲 Random</button>
+                <button onclick="createCustomEmail()" class="success" id="createBtn">Create Email</button>
+                <button onclick="createRandomEmail()" id="randomBtn">🎲 Random</button>
             </div>
         </div>
         
         <div class="controls">
-            <button onclick="fetchDomains()" class="success">🌐 List Domains</button>
+            <button onclick="fetchDomains()" class="success">🌐 Refresh Domains</button>
             <button onclick="checkMessages()" class="info">📨 Check Messages</button>
             <button onclick="refreshMessages()" class="info">🔄 Refresh</button>
             <button onclick="deleteEmail()" class="danger">🗑️ Delete Email</button>
@@ -457,38 +476,79 @@
         }
         
         async function loadDomains() {
+            const select = document.getElementById('domainSelect');
+            const statusText = document.getElementById('statusText');
+            
             try {
-                const response = await fetch(`${API_BASE}/domains/${API_KEY}/all`);
-                const data = await response.json();
+                statusText.textContent = 'Loading domains...';
                 
-                if (data.status && data.data.domains) {
+                const response = await fetch(`${API_BASE}/domains/${API_KEY}/all`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Domains loaded:', data);
+                
+                if (data.status && data.data && data.data.domains) {
                     domains = data.data.domains;
-                    const select = document.getElementById('domainSelect');
+                    
+                    // Clear and populate select
                     select.innerHTML = '';
                     
+                    // Filter free domains
                     const freeDomains = domains.filter(d => d.type === 'Free');
+                    const premiumDomains = domains.filter(d => d.type === 'Premium');
                     
                     if (freeDomains.length > 0) {
+                        const optgroup = document.createElement('optgroup');
+                        optgroup.label = 'Free Domains';
                         freeDomains.forEach(domain => {
                             const option = document.createElement('option');
                             option.value = domain.domain;
                             option.textContent = domain.domain;
-                            select.appendChild(option);
+                            optgroup.appendChild(option);
                         });
+                        select.appendChild(optgroup);
                     }
                     
+                    if (premiumDomains.length > 0) {
+                        const optgroup = document.createElement('optgroup');
+                        optgroup.label = 'Premium Domains';
+                        premiumDomains.forEach(domain => {
+                            const option = document.createElement('option');
+                            option.value = domain.domain;
+                            option.textContent = domain.domain;
+                            optgroup.appendChild(option);
+                        });
+                        select.appendChild(optgroup);
+                    }
+                    
+                    // Enable select and set first option
+                    select.disabled = false;
                     if (freeDomains.length > 0) {
                         select.value = freeDomains[0].domain;
                     }
+                    
+                    statusText.textContent = `✅ API Connected - ${domains.length} domains available`;
+                    showToast(`Loaded ${domains.length} domains`);
+                } else {
+                    throw new Error('Invalid response format');
                 }
             } catch (error) {
                 console.error('Failed to load domains:', error);
+                statusText.textContent = '❌ Failed to load domains';
+                select.innerHTML = '<option value="">Failed to load domains</option>';
+                showToast('Failed to load domains: ' + error.message, true);
             }
         }
         
         async function fetchDomains() {
             showLoading();
+            await loadDomains();
             
+            // Also display in the domain list
             try {
                 const response = await fetch(`${API_BASE}/domains/${API_KEY}/all`);
                 const data = await response.json();
@@ -518,14 +578,9 @@
                     
                     domainList.innerHTML = html;
                     domainList.style.display = 'grid';
-                    
-                    showToast(`Loaded ${domains.length} domains`);
-                } else {
-                    throw new Error(data.message || 'Failed to load domains');
                 }
             } catch (error) {
-                console.error('Error:', error);
-                showToast('Failed to load domains: ' + error.message, true);
+                console.error('Error displaying domain list:', error);
             }
             
             hideLoading();
@@ -550,9 +605,16 @@
             const domain = document.getElementById('domainSelect').value;
             
             if (!domain) {
-                showToast('Please select a domain', true);
+                showToast('Please select a domain or wait for domains to load', true);
                 return;
             }
+            
+            const createBtn = document.getElementById('createBtn');
+            const randomBtn = document.getElementById('randomBtn');
+            
+            createBtn.disabled = true;
+            randomBtn.disabled = true;
+            createBtn.textContent = 'Creating...';
             
             showLoading();
             
@@ -563,9 +625,14 @@
                     headers: { 'Content-Type': 'application/json' }
                 });
                 
-                const createData = await createResponse.json();
+                if (!createResponse.ok) {
+                    throw new Error(`HTTP error! status: ${createResponse.status}`);
+                }
                 
-                if (!createResponse.ok || !createData.status) {
+                const createData = await createResponse.json();
+                console.log('Create response:', createData);
+                
+                if (!createData.status) {
                     throw new Error(createData.message || 'Failed to create email');
                 }
                 
@@ -574,15 +641,18 @@
                 // Step 2: Update if username provided
                 if (username) {
                     const currentEmail = finalData.email;
-                    const updateResponse = await fetch(
-                        `${API_BASE}/emails/${API_KEY}/${currentEmail}/${username}/${domain}`,
-                        { method: 'POST' }
-                    );
+                    const updateUrl = `${API_BASE}/emails/${API_KEY}/${currentEmail}/${username}/${domain}`;
+                    console.log('Update URL:', updateUrl);
                     
-                    const updateData = await updateResponse.json();
+                    const updateResponse = await fetch(updateUrl, { method: 'POST' });
                     
-                    if (updateResponse.ok && updateData.status) {
-                        finalData = updateData.data;
+                    if (updateResponse.ok) {
+                        const updateData = await updateResponse.json();
+                        console.log('Update response:', updateData);
+                        
+                        if (updateData.status) {
+                            finalData = updateData.data;
+                        }
                     }
                 }
                 
@@ -602,9 +672,12 @@
             } catch (error) {
                 console.error('Create error:', error);
                 showToast('Failed to create email: ' + error.message, true);
+            } finally {
+                createBtn.disabled = false;
+                randomBtn.disabled = false;
+                createBtn.textContent = 'Create Email';
+                hideLoading();
             }
-            
-            hideLoading();
         }
         
         // Legacy create function for compatibility
@@ -667,7 +740,6 @@
                 console.error('Check messages error:', error);
                 showToast('Error: ' + error.message, true);
                 
-                // Show empty state on error
                 document.getElementById('messagesList').innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">❌</div>
