@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TempMail44 - Temporary Email Manager</title>
+    <title>TempMail44 - Temporary Email</title>
     <style>
+        /* All the same styles as before */
         * {
             margin: 0;
             padding: 0;
@@ -292,11 +293,6 @@
             color: white;
         }
         
-        .type-premium {
-            background: #FF9800;
-            color: white;
-        }
-        
         .toast {
             position: fixed;
             bottom: 30px;
@@ -377,28 +373,15 @@
             font-size: 18px;
             color: #666;
         }
-
-        .debug-info {
-            background: #f5f5f5;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            font-family: monospace;
-            font-size: 12px;
-            display: none;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>
-            <span>📧</span>
-            TempMail44 Manager
-        </h1>
+        <h1>📧 TempMail44</h1>
         
         <div class="api-status" id="apiStatus">
             <span class="status-dot"></span>
-            <span id="statusText">Loading domains...</span>
+            <span id="statusText">Connecting...</span>
         </div>
         
         <div class="create-section">
@@ -444,37 +427,33 @@
             </div>
             <div id="messagesList"></div>
         </div>
-        
-        <div class="debug-info" id="debugInfo"></div>
     </div>
     
     <div class="toast" id="toast"></div>
 
     <script>
-        // API Configuration
         const API_BASE = 'https://tempmail44.com';
         const API_KEY = 'SkJvIxz4zvie2sPd4x27AKuHcgDo2d';
         
-        // State
         let currentEmail = localStorage.getItem('tempEmail');
         let emailData = JSON.parse(localStorage.getItem('tempEmailData') || 'null');
         let domains = [];
+        let autoRefreshInterval = null;
         
-        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             loadDomains();
             if (currentEmail && emailData) {
                 displayCurrentEmail();
-                // Delay message check to ensure everything is ready
                 setTimeout(() => checkMessages(), 500);
             }
+            startAutoRefresh();
         });
         
-        function debug(message, data) {
-            console.log(message, data);
-            const debugEl = document.getElementById('debugInfo');
-            debugEl.style.display = 'block';
-            debugEl.innerHTML += `<br>${message}: ${JSON.stringify(data)}`;
+        function startAutoRefresh() {
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            autoRefreshInterval = setInterval(() => {
+                if (currentEmail) checkMessages();
+            }, 15000); // Check every 15 seconds
         }
         
         function showLoading() {
@@ -490,9 +469,7 @@
             toast.textContent = message;
             toast.style.background = isError ? '#f44336' : '#333';
             toast.style.display = 'block';
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 3000);
+            setTimeout(() => toast.style.display = 'none', 3000);
         }
         
         async function loadDomains() {
@@ -501,66 +478,35 @@
             
             try {
                 statusText.textContent = 'Loading domains...';
+                const response = await fetch(`${API_BASE}/api/domains/${API_KEY}/all`);
                 
-                const url = `${API_BASE}/api/domains/${API_KEY}/all`;
-                debug('Loading domains from:', url);
-                
-                const response = await fetch(url);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 
                 const data = await response.json();
-                debug('Domains response:', data);
                 
                 if (data.status && data.data && data.data.domains) {
                     domains = data.data.domains;
-                    
-                    // Clear and populate select
                     select.innerHTML = '';
                     
-                    // Filter free domains
                     const freeDomains = domains.filter(d => d.type === 'Free');
-                    const premiumDomains = domains.filter(d => d.type === 'Premium');
                     
                     if (freeDomains.length > 0) {
-                        const optgroup = document.createElement('optgroup');
-                        optgroup.label = 'Free Domains';
                         freeDomains.forEach(domain => {
                             const option = document.createElement('option');
                             option.value = domain.domain;
                             option.textContent = domain.domain;
-                            optgroup.appendChild(option);
+                            select.appendChild(option);
                         });
-                        select.appendChild(optgroup);
                     }
                     
-                    if (premiumDomains.length > 0) {
-                        const optgroup = document.createElement('optgroup');
-                        optgroup.label = 'Premium Domains';
-                        premiumDomains.forEach(domain => {
-                            const option = document.createElement('option');
-                            option.value = domain.domain;
-                            option.textContent = domain.domain;
-                            optgroup.appendChild(option);
-                        });
-                        select.appendChild(optgroup);
-                    }
-                    
-                    // Enable select and set first option
                     select.disabled = false;
-                    if (freeDomains.length > 0) {
-                        select.value = freeDomains[0].domain;
-                    }
+                    if (freeDomains.length > 0) select.value = freeDomains[0].domain;
                     
-                    statusText.textContent = `✅ API Connected - ${domains.length} domains available`;
-                } else {
-                    throw new Error('Invalid response format');
+                    statusText.textContent = `✅ Connected - ${domains.length} domains available`;
                 }
             } catch (error) {
                 console.error('Failed to load domains:', error);
-                statusText.textContent = '❌ Failed to load domains';
+                statusText.textContent = '❌ Connection failed';
                 select.innerHTML = '<option value="">Failed to load domains</option>';
             }
         }
@@ -569,7 +515,6 @@
             showLoading();
             await loadDomains();
             
-            // Also display in the domain list
             try {
                 const response = await fetch(`${API_BASE}/api/domains/${API_KEY}/all`);
                 const data = await response.json();
@@ -577,31 +522,19 @@
                 if (response.ok && data.status && data.data.domains) {
                     const domains = data.data.domains;
                     const domainList = document.getElementById('domainList');
-                    
                     const freeDomains = domains.filter(d => d.type === 'Free');
-                    const premiumDomains = domains.filter(d => d.type === 'Premium');
                     
-                    let html = '<h3>Available Domains:</h3>';
-                    
-                    if (freeDomains.length > 0) {
-                        html += '<h4 style="margin: 15px 0 10px 0; color: #4CAF50;">Free Domains</h4>';
-                        freeDomains.forEach(domain => {
-                            html += `<div class="domain-item">${domain.domain} <span class="domain-type type-free">FREE</span></div>`;
-                        });
-                    }
-                    
-                    if (premiumDomains.length > 0) {
-                        html += '<h4 style="margin: 15px 0 10px 0; color: #FF9800;">Premium Domains</h4>';
-                        premiumDomains.forEach(domain => {
-                            html += `<div class="domain-item">${domain.domain} <span class="domain-type type-premium">PREMIUM</span></div>`;
-                        });
-                    }
+                    let html = '<h3>Available Domains:</h3><h4 style="margin: 15px 0 10px 0; color: #4CAF50;">Free Domains</h4>';
+                    freeDomains.forEach(domain => {
+                        html += `<div class="domain-item">${domain.domain} <span class="domain-type type-free">FREE</span></div>`;
+                    });
                     
                     domainList.innerHTML = html;
                     domainList.style.display = 'grid';
+                    showToast(`Loaded ${domains.length} domains`);
                 }
             } catch (error) {
-                console.error('Error displaying domain list:', error);
+                console.error('Error:', error);
             }
             
             hideLoading();
@@ -626,7 +559,7 @@
             const domain = document.getElementById('domainSelect').value;
             
             if (!domain) {
-                showToast('Please select a domain or wait for domains to load', true);
+                showToast('Please select a domain', true);
                 return;
             }
             
@@ -636,47 +569,31 @@
             createBtn.disabled = true;
             randomBtn.disabled = true;
             createBtn.textContent = 'Creating...';
-            
             showLoading();
             
             try {
-                // Step 1: Create email
-                const createUrl = `${API_BASE}/api/emails/${API_KEY}`;
-                debug('Creating email at:', createUrl);
-                
-                const createResponse = await fetch(createUrl, {
+                const createResponse = await fetch(`${API_BASE}/api/emails/${API_KEY}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 });
                 
-                if (!createResponse.ok) {
-                    throw new Error(`HTTP error! status: ${createResponse.status}`);
-                }
+                if (!createResponse.ok) throw new Error(`HTTP error! status: ${createResponse.status}`);
                 
                 const createData = await createResponse.json();
-                debug('Create response:', createData);
-                
-                if (!createData.status) {
-                    throw new Error(createData.message || 'Failed to create email');
-                }
+                if (!createData.status) throw new Error(createData.message || 'Failed to create email');
                 
                 let finalData = createData.data;
                 
-                // Step 2: Update if username provided
                 if (username) {
                     const currentEmail = finalData.email;
-                    const updateUrl = `${API_BASE}/api/emails/${API_KEY}/${currentEmail}/${username}/${domain}`;
-                    debug('Update URL:', updateUrl);
-                    
-                    const updateResponse = await fetch(updateUrl, { method: 'POST' });
+                    const updateResponse = await fetch(
+                        `${API_BASE}/api/emails/${API_KEY}/${currentEmail}/${username}/${domain}`,
+                        { method: 'POST' }
+                    );
                     
                     if (updateResponse.ok) {
                         const updateData = await updateResponse.json();
-                        debug('Update response:', updateData);
-                        
-                        if (updateData.status) {
-                            finalData = updateData.data;
-                        }
+                        if (updateData.status) finalData = updateData.data;
                     }
                 }
                 
@@ -688,9 +605,8 @@
                 
                 displayCurrentEmail();
                 document.getElementById('emailName').value = '';
-                showToast('✅ Email created successfully!');
+                showToast('✅ Email created!');
                 
-                // Auto-check messages
                 setTimeout(() => checkMessages(), 1000);
                 
             } catch (error) {
@@ -704,7 +620,6 @@
             }
         }
         
-        // Legacy create function for compatibility
         async function createEmail() {
             document.getElementById('emailName').value = '';
             await createCustomEmail();
@@ -722,70 +637,44 @@
                     <div><strong>⏰ Expires:</strong><br>${expireDate}</div>
                     <div><strong>📅 Created:</strong><br>${createdDate}</div>
                     <div><strong>🌐 Domain:</strong><br>${emailData?.domain || 'Unknown'}</div>
-                    <div><strong>🔑 Token:</strong><br>${emailData?.email_token || 'N/A'}</div>
+                    <div><strong>🔑 Token:</strong><br>${emailData?.email_token ? 'Available' : 'N/A'}</div>
                 </div>
             `;
             display.style.display = 'block';
         }
         
         async function checkMessages() {
-            if (!currentEmail) {
-                showToast('Please create an email first', true);
-                return;
-            }
-            
-            showLoading();
+            if (!currentEmail) return;
             
             try {
-                // IMPORTANT: Using the correct API endpoint from documentation
-                const url = `${API_BASE}/api/messages/${API_KEY}/${currentEmail}`;
-                debug('Checking messages at:', url);
+                const response = await fetch(`${API_BASE}/api/messages/${API_KEY}/${currentEmail}`);
                 
-                const response = await fetch(url);
-                debug('Response status:', response.status);
-                
-                if (!response.ok) {
-                    // If 404, maybe no messages yet - that's OK
-                    if (response.status === 404) {
-                        debug('No messages found (404) - this is normal for new emails');
-                        displayMessages([]);
-                        document.getElementById('messageCount').textContent = '0 messages';
-                        hideLoading();
-                        return;
-                    }
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                if (response.status === 404) {
+                    displayMessages([]);
+                    document.getElementById('messageCount').textContent = '0 messages';
+                    return;
                 }
                 
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
                 const data = await response.json();
-                debug('Messages response:', data);
                 
                 if (data.status) {
                     const messages = data.messages || [];
                     displayMessages(messages);
                     document.getElementById('messageCount').textContent = `${messages.length} message${messages.length !== 1 ? 's' : ''}`;
-                    
-                    if (messages.length > 0) {
-                        showToast(`📬 ${messages.length} message${messages.length !== 1 ? 's' : ''} found`);
-                    }
+                    if (messages.length > 0) showToast(`📬 ${messages.length} new message${messages.length !== 1 ? 's' : ''}`);
                 } else {
-                    // If status is false but response was OK, maybe empty inbox
                     displayMessages([]);
                     document.getElementById('messageCount').textContent = '0 messages';
                 }
             } catch (error) {
                 console.error('Check messages error:', error);
-                
-                // Don't show error for 404 as it's normal for empty inbox
                 if (!error.message.includes('404')) {
-                    showToast('Error: ' + error.message, true);
+                    displayMessages([]);
+                    document.getElementById('messageCount').textContent = '0 messages';
                 }
-                
-                // Show empty state instead of error for 404
-                displayMessages([]);
-                document.getElementById('messageCount').textContent = '0 messages';
             }
-            
-            hideLoading();
         }
         
         function displayMessages(messages) {
@@ -796,7 +685,7 @@
                     <div class="empty-state">
                         <div class="empty-state-icon">📭</div>
                         <p>No messages yet</p>
-                        <p style="font-size: 14px; margin-top: 10px;">Messages will appear here when you receive them</p>
+                        <p style="font-size: 14px; margin-top: 10px;">Messages will appear here automatically</p>
                         <button onclick="checkMessages()" style="margin-top: 15px;">Check Now</button>
                     </div>
                 `;
@@ -804,7 +693,6 @@
             }
             
             messages.sort((a, b) => new Date(b.receivedAt) - new Date(a.receivedAt));
-            
             container.innerHTML = '';
             
             messages.forEach(msg => {
@@ -812,29 +700,20 @@
                 div.className = `message-item ${!msg.is_seen ? 'unread' : ''}`;
                 div.onclick = function(e) {
                     if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A') return;
-                    
                     this.classList.toggle('expanded');
-                    if (this.classList.contains('expanded')) {
-                        loadMessageContent(msg.id, this);
-                    }
+                    if (this.classList.contains('expanded')) loadMessageContent(msg.id, this);
                 };
                 
                 const date = msg.receivedAt ? new Date(msg.receivedAt).toLocaleString() : 'Unknown';
                 
                 div.innerHTML = `
                     <div class="message-header">
-                        <span class="message-subject">
-                            ${!msg.is_seen ? '🔵' : '📨'} ${msg.subject || 'No Subject'}
-                        </span>
+                        <span class="message-subject">${!msg.is_seen ? '🔵' : '📨'} ${msg.subject || 'No Subject'}</span>
                         <span class="message-time">${date}</span>
                     </div>
-                    <div class="message-from">
-                        From: ${msg.from || 'Unknown'} ${msg.from_email ? `<${msg.from_email}>` : ''}
-                    </div>
+                    <div class="message-from">From: ${msg.from || 'Unknown'} ${msg.from_email ? `<${msg.from_email}>` : ''}</div>
                     <div class="message-content" id="msg-${msg.id}">
-                        <div style="text-align: center; padding: 20px;">
-                            <div class="spinner" style="width: 30px; height: 30px;"></div>
-                        </div>
+                        <div style="text-align: center; padding: 20px;"><div class="spinner" style="width: 30px; height: 30px;"></div></div>
                     </div>
                 `;
                 
@@ -844,30 +723,17 @@
         
         async function loadMessageContent(messageId, element) {
             const contentDiv = element.querySelector(`#msg-${messageId}`);
-            
             if (contentDiv.dataset.loaded) return;
             
             try {
-                const url = `${API_BASE}/api/messages/${API_KEY}/message/${messageId}`;
-                const response = await fetch(url);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                const response = await fetch(`${API_BASE}/api/messages/${API_KEY}/message/${messageId}`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 
                 const data = await response.json();
                 
                 if (data.status && data.data) {
                     const msg = data.data;
-                    let html = `<div class="message-body">`;
-                    
-                    if (msg.html) {
-                        html += msg.content;
-                    } else {
-                        html += (msg.content || 'No content').replace(/\n/g, '<br>');
-                    }
-                    
-                    html += '</div>';
+                    let html = `<div class="message-body">${msg.html ? msg.content : (msg.content || 'No content').replace(/\n/g, '<br>')}</div>`;
                     
                     if (msg.attachments && msg.attachments.length > 0) {
                         html += '<div style="margin-top: 10px;"><strong>📎 Attachments:</strong><br>';
@@ -881,40 +747,30 @@
                     
                     contentDiv.innerHTML = html;
                     contentDiv.dataset.loaded = 'true';
-                } else {
-                    throw new Error(data.message || 'Failed to load message');
                 }
             } catch (error) {
                 console.error('Load message error:', error);
-                contentDiv.innerHTML = `<p style="color: #f44336;">Error: ${error.message}</p>`;
+                contentDiv.innerHTML = `<p style="color: #f44336;">Error loading message</p>`;
             }
         }
         
         async function deleteMessage(messageId, event) {
             event.stopPropagation();
-            
             if (!confirm('Delete this message?')) return;
             
             showLoading();
-            
             try {
-                const response = await fetch(`${API_BASE}/api/messages/${API_KEY}/message/${messageId}`, {
-                    method: 'POST'
-                });
-                
+                const response = await fetch(`${API_BASE}/api/messages/${API_KEY}/message/${messageId}`, { method: 'POST' });
                 const data = await response.json();
                 
                 if (response.ok && data.status) {
                     showToast('✅ Message deleted');
                     await checkMessages();
-                } else {
-                    throw new Error(data.message || 'Failed to delete message');
                 }
             } catch (error) {
-                console.error('Delete message error:', error);
-                showToast('Error: ' + error.message, true);
+                console.error('Delete error:', error);
+                showToast('Error deleting message', true);
             }
-            
             hideLoading();
         }
         
@@ -931,12 +787,8 @@
             if (!confirm('Delete this email address? All messages will be lost.')) return;
             
             showLoading();
-            
             try {
-                const response = await fetch(`${API_BASE}/api/emails/${API_KEY}/${currentEmail}`, {
-                    method: 'POST'
-                });
-                
+                const response = await fetch(`${API_BASE}/api/emails/${API_KEY}/${currentEmail}`, { method: 'POST' });
                 const data = await response.json();
                 
                 if (response.ok && data.status) {
@@ -954,16 +806,12 @@
                         </div>
                     `;
                     document.getElementById('messageCount').textContent = '0 messages';
-                    
-                    showToast('✅ Email deleted successfully');
-                } else {
-                    throw new Error(data.message || 'Failed to delete email');
+                    showToast('✅ Email deleted');
                 }
             } catch (error) {
-                console.error('Delete email error:', error);
-                showToast('Error: ' + error.message, true);
+                console.error('Delete error:', error);
+                showToast('Error deleting email', true);
             }
-            
             hideLoading();
         }
         
@@ -974,7 +822,7 @@
             }
             
             navigator.clipboard.writeText(currentEmail).then(() => {
-                showToast('✅ Email copied to clipboard!');
+                showToast('✅ Copied to clipboard!');
             }).catch(() => {
                 const textarea = document.createElement('textarea');
                 textarea.value = currentEmail;
@@ -982,7 +830,7 @@
                 textarea.select();
                 document.execCommand('copy');
                 document.body.removeChild(textarea);
-                showToast('✅ Email copied to clipboard!');
+                showToast('✅ Copied!');
             });
         }
     </script>
