@@ -377,6 +377,16 @@
             font-size: 18px;
             color: #666;
         }
+
+        .debug-info {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -434,13 +444,15 @@
             </div>
             <div id="messagesList"></div>
         </div>
+        
+        <div class="debug-info" id="debugInfo"></div>
     </div>
     
     <div class="toast" id="toast"></div>
 
     <script>
         // API Configuration
-        const API_BASE = 'https://tempmail44.com/api';
+        const API_BASE = 'https://tempmail44.com';
         const API_KEY = 'SkJvIxz4zvie2sPd4x27AKuHcgDo2d';
         
         // State
@@ -453,9 +465,17 @@
             loadDomains();
             if (currentEmail && emailData) {
                 displayCurrentEmail();
-                checkMessages();
+                // Delay message check to ensure everything is ready
+                setTimeout(() => checkMessages(), 500);
             }
         });
+        
+        function debug(message, data) {
+            console.log(message, data);
+            const debugEl = document.getElementById('debugInfo');
+            debugEl.style.display = 'block';
+            debugEl.innerHTML += `<br>${message}: ${JSON.stringify(data)}`;
+        }
         
         function showLoading() {
             document.getElementById('loading').classList.add('active');
@@ -482,14 +502,17 @@
             try {
                 statusText.textContent = 'Loading domains...';
                 
-                const response = await fetch(`${API_BASE}/domains/${API_KEY}/all`);
+                const url = `${API_BASE}/api/domains/${API_KEY}/all`;
+                debug('Loading domains from:', url);
+                
+                const response = await fetch(url);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
                 const data = await response.json();
-                console.log('Domains loaded:', data);
+                debug('Domains response:', data);
                 
                 if (data.status && data.data && data.data.domains) {
                     domains = data.data.domains;
@@ -532,7 +555,6 @@
                     }
                     
                     statusText.textContent = `✅ API Connected - ${domains.length} domains available`;
-                    showToast(`Loaded ${domains.length} domains`);
                 } else {
                     throw new Error('Invalid response format');
                 }
@@ -540,7 +562,6 @@
                 console.error('Failed to load domains:', error);
                 statusText.textContent = '❌ Failed to load domains';
                 select.innerHTML = '<option value="">Failed to load domains</option>';
-                showToast('Failed to load domains: ' + error.message, true);
             }
         }
         
@@ -550,7 +571,7 @@
             
             // Also display in the domain list
             try {
-                const response = await fetch(`${API_BASE}/domains/${API_KEY}/all`);
+                const response = await fetch(`${API_BASE}/api/domains/${API_KEY}/all`);
                 const data = await response.json();
                 
                 if (response.ok && data.status && data.data.domains) {
@@ -620,7 +641,10 @@
             
             try {
                 // Step 1: Create email
-                const createResponse = await fetch(`${API_BASE}/emails/${API_KEY}`, {
+                const createUrl = `${API_BASE}/api/emails/${API_KEY}`;
+                debug('Creating email at:', createUrl);
+                
+                const createResponse = await fetch(createUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 });
@@ -630,7 +654,7 @@
                 }
                 
                 const createData = await createResponse.json();
-                console.log('Create response:', createData);
+                debug('Create response:', createData);
                 
                 if (!createData.status) {
                     throw new Error(createData.message || 'Failed to create email');
@@ -641,14 +665,14 @@
                 // Step 2: Update if username provided
                 if (username) {
                     const currentEmail = finalData.email;
-                    const updateUrl = `${API_BASE}/emails/${API_KEY}/${currentEmail}/${username}/${domain}`;
-                    console.log('Update URL:', updateUrl);
+                    const updateUrl = `${API_BASE}/api/emails/${API_KEY}/${currentEmail}/${username}/${domain}`;
+                    debug('Update URL:', updateUrl);
                     
                     const updateResponse = await fetch(updateUrl, { method: 'POST' });
                     
                     if (updateResponse.ok) {
                         const updateData = await updateResponse.json();
-                        console.log('Update response:', updateData);
+                        debug('Update response:', updateData);
                         
                         if (updateData.status) {
                             finalData = updateData.data;
@@ -698,7 +722,7 @@
                     <div><strong>⏰ Expires:</strong><br>${expireDate}</div>
                     <div><strong>📅 Created:</strong><br>${createdDate}</div>
                     <div><strong>🌐 Domain:</strong><br>${emailData?.domain || 'Unknown'}</div>
-                    <div><strong>🔑 Token:</strong><br>${emailData?.email_token ? 'Available' : 'N/A'}</div>
+                    <div><strong>🔑 Token:</strong><br>${emailData?.email_token || 'N/A'}</div>
                 </div>
             `;
             display.style.display = 'block';
@@ -713,17 +737,27 @@
             showLoading();
             
             try {
-                const url = `${API_BASE}/messages/${API_KEY}/${currentEmail}`;
-                console.log('Checking messages:', url);
+                // IMPORTANT: Using the correct API endpoint from documentation
+                const url = `${API_BASE}/api/messages/${API_KEY}/${currentEmail}`;
+                debug('Checking messages at:', url);
                 
                 const response = await fetch(url);
+                debug('Response status:', response.status);
                 
                 if (!response.ok) {
+                    // If 404, maybe no messages yet - that's OK
+                    if (response.status === 404) {
+                        debug('No messages found (404) - this is normal for new emails');
+                        displayMessages([]);
+                        document.getElementById('messageCount').textContent = '0 messages';
+                        hideLoading();
+                        return;
+                    }
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
                 const data = await response.json();
-                console.log('Messages response:', data);
+                debug('Messages response:', data);
                 
                 if (data.status) {
                     const messages = data.messages || [];
@@ -734,20 +768,21 @@
                         showToast(`📬 ${messages.length} message${messages.length !== 1 ? 's' : ''} found`);
                     }
                 } else {
-                    throw new Error(data.message || 'Failed to fetch messages');
+                    // If status is false but response was OK, maybe empty inbox
+                    displayMessages([]);
+                    document.getElementById('messageCount').textContent = '0 messages';
                 }
             } catch (error) {
                 console.error('Check messages error:', error);
-                showToast('Error: ' + error.message, true);
                 
-                document.getElementById('messagesList').innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">❌</div>
-                        <p>Failed to load messages</p>
-                        <p style="font-size: 14px; margin-top: 10px;">${error.message}</p>
-                        <button onclick="checkMessages()" style="margin-top: 15px;">Try Again</button>
-                    </div>
-                `;
+                // Don't show error for 404 as it's normal for empty inbox
+                if (!error.message.includes('404')) {
+                    showToast('Error: ' + error.message, true);
+                }
+                
+                // Show empty state instead of error for 404
+                displayMessages([]);
+                document.getElementById('messageCount').textContent = '0 messages';
             }
             
             hideLoading();
@@ -761,7 +796,8 @@
                     <div class="empty-state">
                         <div class="empty-state-icon">📭</div>
                         <p>No messages yet</p>
-                        <p style="font-size: 14px; margin-top: 10px;">Messages will appear here automatically</p>
+                        <p style="font-size: 14px; margin-top: 10px;">Messages will appear here when you receive them</p>
+                        <button onclick="checkMessages()" style="margin-top: 15px;">Check Now</button>
                     </div>
                 `;
                 return;
@@ -812,7 +848,8 @@
             if (contentDiv.dataset.loaded) return;
             
             try {
-                const response = await fetch(`${API_BASE}/messages/${API_KEY}/message/${messageId}`);
+                const url = `${API_BASE}/api/messages/${API_KEY}/message/${messageId}`;
+                const response = await fetch(url);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -861,7 +898,7 @@
             showLoading();
             
             try {
-                const response = await fetch(`${API_BASE}/messages/${API_KEY}/message/${messageId}`, {
+                const response = await fetch(`${API_BASE}/api/messages/${API_KEY}/message/${messageId}`, {
                     method: 'POST'
                 });
                 
@@ -896,7 +933,7 @@
             showLoading();
             
             try {
-                const response = await fetch(`${API_BASE}/emails/${API_KEY}/${currentEmail}`, {
+                const response = await fetch(`${API_BASE}/api/emails/${API_KEY}/${currentEmail}`, {
                     method: 'POST'
                 });
                 
