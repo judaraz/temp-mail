@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TempMail44 - Temporary Email</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #0f3460;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #e94560;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 28px;
+        }
+        
+        .status-bar {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #00b894 0%, #00a381 100%);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            color: white;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-bar.error {
+            background: linear-gradient(135deg, #d63031 0%, #c0392b 100%);
+        }
+        
+        .pulse {
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .create-section {
+            background: #1a1a2e;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .create-section h3 {
+            color: #e94560;
+            margin-bottom: 15px;
+        }
+        
+        .email-builder {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .email-builder input {
+            flex: 1;
+            min-width: 200px;
+            padding: 14px 16px;
+            border: 2px solid #e94560;
+            border-radius: 12px;
+            font-size: 15px;
+            background: #0f3460;
+            color: white;
+        }
+        
+        .email-builder input::placeholder {
+            color: #8899aa;
+        }
+        
+        .email-builder select {
+            padding: 14px 16px;
+            border: 2px solid #e94560;
+            border-radius: 12px;
+            font-size: 15px;
+            background: #0f3460;
+            color: white;
+            min-width: 220px;
+            cursor: pointer;
+        }
+        
+        .email-builder span {
+            font-size: 18px;
+            color: white;
+        }
+        
+        button {
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #e94560 0%, #c62a47 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(233, 69, 96, 0.4);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        button.secondary {
+            background: linear-gradient(135deg, #00b894 0%, #00a381 100%);
+            box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
+        }
+        
+        button.danger {
+            background: linear-gradient(135deg, #d63031 0%, #c0392b 100%);
+            box-shadow: 0 4px 15px rgba(214, 48, 49, 0.3);
+        }
+        
+        .email-card {
+            background: #1a1a2e;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #e94560;
+        }
+        
+        .email-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .email-header h3 {
+            color: #e94560;
+        }
+        
+        .email-address {
+            font-size: 32px;
+            font-family: 'Courier New', monospace;
+            color: #00b894;
+            margin: 15px 0;
+            word-break: break-all;
+            font-weight: bold;
+            background: #0f3460;
+            padding: 15px;
+            border-radius: 12px;
+        }
+        
+        .email-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+            color: #8899aa;
+        }
+        
+        .messages-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .messages-header h3 {
+            color: #e94560;
+        }
+        
+        .message-count {
+            background: #e94560;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .message-item {
+            background: #1a1a2e;
+            border: 2px solid #0f3460;
+            padding: 18px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .message-item:hover {
+            border-color: #e94560;
+            transform: translateX(5px);
+        }
+        
+        .message-item.unread {
+            border-left: 5px solid #00b894;
+            background: #16213e;
+        }
+        
+        .message-subject {
+            font-weight: bold;
+            color: white;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .message-from {
+            color: #00b894;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .message-time {
+            color: #8899aa;
+            font-size: 12px;
+        }
+        
+        .message-content {
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid #0f3460;
+            display: none;
+        }
+        
+        .message-item.expanded .message-content {
+            display: block;
+        }
+        
+        .message-body {
+            background: #0f3460;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            color: #ccd6e0;
+            max-height: 400px;
+            overflow-y: auto;
+            line-height: 1.6;
+        }
+        
+        .attachments {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .attachment-link {
+            display: inline-block;
+            padding: 10px 16px;
+            background: #00b894;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .attachment-link:hover {
+            background: #00a381;
+            transform: scale(1.05);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .spinner {
+            border: 3px solid #0f3460;
+            border-top: 3px solid #e94560;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8899aa;
+        }
+        
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1a1a2e;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            display: none;
+            animation: slideIn 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 1000;
+            border-left: 4px solid #e94560;
+        }
+        
+        @keyframes slideIn {
+            from { 
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to { 
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .refresh-indicator {
+            color: #00b894;
+            font-size: 14px;
+            animation: fadeInOut 2s infinite;
+        }
+        
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <span>📧</span>
+            TempMail44
+        </h1>
+        
+        <div class="status-bar" id="statusBar">
+            <span class="pulse"></span>
+            <span id="statusText">Loading domains...</span>
+        </div>
+        
+        <div class="create-section">
+            <h3>✨ Create New Email</h3>
+            <div class="email-builder">
+                <input type="text" id="emailName" placeholder="Username (optional)" pattern="[a-zA-Z0-9._-]+">
+                <span>@</span>
+                <select id="domainSelect" disabled>
+                    <option value="">Loading domains...</option>
+                </select>
+                <button onclick="createCustomEmail()" id="createBtn">Create Email</button>
+                <button onclick="createRandomEmail()" class="secondary">🎲 Random</button>
+            </div>
+        </div>
+        
+        <div class="email-card" id="emailCard" style="display: none;">
+            <div class="email-header">
+                <h3>📧 Current Email</h3>
+                <div class="controls">
+                    <button onclick="copyEmail()" class="secondary">📋 Copy</button>
+                    <button onclick="deleteEmail()" class="danger">🗑️ Delete</button>
+                </div>
+            </div>
+            <div class="email-address" id="currentEmail"></div>
+            <div class="email-info" id="emailInfo"></div>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="color: #8899aa;">Loading...</p>
+        </div>
+        
+        <div class="messages-header">
+            <h3>📨 Inbox</h3>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <span class="message-count" id="messageCount">0 messages</span>
+                <span class="refresh-indicator" id="refreshIndicator">🔄 Auto-refreshing...</span>
+            </div>
+        </div>
+        <div id="messagesList">
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <p>No active email</p>
+                <p style="margin-top: 10px; font-size: 14px;">Create an email to start receiving messages</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // API Configuration - USING YOUR NEW API KEY
+        const API_BASE = 'https://tempmail44.com/api';
+        const API_KEY = 'pTTUF8gTt48p6YcG5PzwiTtQZhQWKVE';
+        
+        let currentEmail = localStorage.getItem('tempEmail');
+        let emailData = JSON.parse(localStorage.getItem('tempEmailData') || 'null');
+        let domains = [];
+        let pollInterval = null;
+        let isPolling = false;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDomains();
+            if (currentEmail && emailData) {
+                displayCurrentEmail();
+                startPolling();
+            }
+        });
+        
+        function startPolling() {
+            if (pollInterval) clearInterval(pollInterval);
+            
+            // Check immediately
+            checkMessages();
+            
+            // Then poll every 8 seconds
+            pollInterval = setInterval(() => {
+                if (currentEmail) {
+                    checkMessages();
+                }
+            }, 8000);
+            
+            document.getElementById('refreshIndicator').style.display = 'inline';
+        }
+        
+        function stopPolling() {
+            if (pollInterval) {
+                clearInterval(pollInterval);
+                pollInterval = null;
+            }
+            document.getElementById('refreshIndicator').style.display = 'none';
+        }
+        
+        function showLoading() {
+            document.getElementById('loading').classList.add('active');
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('active');
+        }
+        
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.borderLeftColor = isError ? '#d63031' : '#00b894';
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 3000);
+        }
+        
+        async function loadDomains() {
+            const select = document.getElementById('domainSelect');
+            const statusText = document.getElementById('statusText');
+            const statusBar = document.getElementById('statusBar');
+            
+            try {
+                const response = await fetch(`${API_BASE}/domains/${API_KEY}/all`);
+                const data = await response.json();
+                console.log('Domains loaded:', data);
+                
+                if (data.status && data.data.domains) {
+                    domains = data.data.domains;
+                    select.innerHTML = '';
+                    
+                    const freeDomains = domains.filter(d => d.type === 'Free');
+                    
+                    freeDomains.forEach(domain => {
+                        const option = document.createElement('option');
+                        option.value = domain.domain;
+                        option.textContent = domain.domain;
+                        select.appendChild(option);
+                    });
+                    
+                    select.disabled = false;
+                    if (freeDomains.length > 0) select.value = freeDomains[0].domain;
+                    
+                    statusText.textContent = `✅ ${domains.length} domains available`;
+                    statusBar.classList.remove('error');
+                } else {
+                    throw new Error('Invalid response');
+                }
+            } catch (error) {
+                console.error('Failed to load domains:', error);
+                statusText.textContent = '❌ Connection failed';
+                statusBar.classList.add('error');
+                select.innerHTML = '<option value="">Failed to load</option>';
+                showToast('Failed to load domains. Check API key.', true);
+            }
+        }
+        
+        function generateRandomString(length = 10) {
+            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+        
+        async function createRandomEmail() {
+            document.getElementById('emailName').value = generateRandomString(10);
+            await createCustomEmail();
+        }
+        
+        async function createCustomEmail() {
+            const username = document.getElementById('emailName').value.trim().toLowerCase();
+            const domain = document.getElementById('domainSelect').value;
+            
+            if (!domain) {
+                showToast('Please select a domain', true);
+                return;
+            }
+            
+            const createBtn = document.getElementById('createBtn');
+            createBtn.disabled = true;
+            createBtn.textContent = 'Creating...';
+            showLoading();
+            
+            try {
+                // Step 1: Create email
+                const createResponse = await fetch(`${API_BASE}/emails/${API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!createResponse.ok) throw new Error('Failed to create email');
+                
+                const createData = await createResponse.json();
+                console.log('Create response:', createData);
+                
+                if (!createData.status) throw new Error(createData.message || 'Creation failed');
+                
+                let finalData = createData.data;
+                
+                // Step 2: Update if username provided
+                if (username) {
+                    const currentEmail = finalData.email;
+                    const updateUrl = `${API_BASE}/emails/${API_KEY}/${currentEmail}/${username}/${domain}`;
+                    console.log('Update URL:', updateUrl);
+                    
+                    const updateResponse = await fetch(updateUrl, { method: 'POST' });
+                    
+                    if (updateResponse.ok) {
+                        const updateData = await updateResponse.json();
+                        console.log('Update response:', updateData);
+                        if (updateData.status) finalData = updateData.data;
+                    }
+                }
+                
+                emailData = finalData;
+                currentEmail = finalData.email;
+                
+                localStorage.setItem('tempEmail', currentEmail);
+                localStorage.setItem('tempEmailData', JSON.stringify(emailData));
+                
+                displayCurrentEmail();
+                document.getElementById('emailName').value = '';
+                showToast('✅ Email created!');
+                
+                // Start polling
+                startPolling();
+                
+            } catch (error) {
+                console.error('Create error:', error);
+                showToast('Failed to create email: ' + error.message, true);
+            } finally {
+                createBtn.disabled = false;
+                createBtn.textContent = 'Create Email';
+                hideLoading();
+            }
+        }
+        
+        function displayCurrentEmail() {
+            const card = document.getElementById('emailCard');
+            document.getElementById('currentEmail').textContent = currentEmail;
+            
+            const expireDate = emailData?.expire_at ? new Date(emailData.expire_at).toLocaleString() : 'Unknown';
+            const createdDate = emailData?.created_at ? new Date(emailData.created_at).toLocaleString() : 'Unknown';
+            
+            document.getElementById('emailInfo').innerHTML = `
+                <div><strong>⏰ Expires:</strong><br>${expireDate}</div>
+                <div><strong>📅 Created:</strong><br>${createdDate}</div>
+                <div><strong>🌐 Domain:</strong><br>${emailData?.domain || 'Unknown'}</div>
+                <div><strong>🔑 Status:</strong><br>Active</div>
+            `;
+            card.style.display = 'block';
+        }
+        
+        async function checkMessages() {
+            if (!currentEmail || isPolling) return;
+            
+            isPolling = true;
+            
+            try {
+                const url = `${API_BASE}/messages/${API_KEY}/${currentEmail}`;
+                console.log('Checking messages:', url);
+                
+                const response = await fetch(url);
+                
+                // 404 means no messages - this is normal
+                if (response.status === 404) {
+                    displayMessages([]);
+                    document.getElementById('messageCount').textContent = '0 messages';
+                    isPolling = false;
+                    return;
+                }
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const data = await response.json();
+                console.log('Messages response:', data);
+                
+                if (data.status) {
+                    const messages = data.messages || [];
+                    displayMessages(messages);
+                    document.getElementById('messageCount').textContent = 
+                        `${messages.length} message${messages.length !== 1 ? 's' : ''}`;
+                    
+                    if (messages.length > 0) {
+                        showToast(`📬 ${messages.length} message${messages.length !== 1 ? 's' : ''} found`);
+                    }
+                } else {
+                    displayMessages([]);
+                    document.getElementById('messageCount').textContent = '0 messages';
+                }
+            } catch (error) {
+                console.error('Check messages error:', error);
+                // Only show error if it's not a 404
+                if (!error.message.includes('404')) {
+                    console.log('Error details:', error);
+                }
+                displayMessages([]);
+                document.getElementById('messageCount').textContent = '0 messages';
+            }
+            
+            isPolling = false;
+        }
+        
+        function displayMessages(messages) {
+            const container = document.getElementById('messagesList');
+            
+            if (!messages || messages.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>No messages yet</p>
+                        <p style="margin-top: 10px; font-size: 14px;">Waiting for incoming emails...</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            messages.sort((a, b) => new Date(b.receivedAt) - new Date(a.receivedAt));
+            container.innerHTML = '';
+            
+            messages.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = `message-item ${!msg.is_seen ? 'unread' : ''}`;
+                div.onclick = function(e) {
+                    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A') return;
+                    this.classList.toggle('expanded');
+                    if (this.classList.contains('expanded')) {
+                        loadMessageContent(msg.id, this);
+                    }
+                };
+                
+                const date = msg.receivedAt ? new Date(msg.receivedAt).toLocaleString() : 'Unknown';
+                
+                div.innerHTML = `
+                    <div class="message-subject">
+                        ${!msg.is_seen ? '🔵' : '📨'} ${msg.subject || 'No Subject'}
+                    </div>
+                    <div class="message-from">
+                        From: ${msg.from || 'Unknown'} ${msg.from_email ? `<${msg.from_email}>` : ''}
+                    </div>
+                    <div class="message-time">${date}</div>
+                    <div class="message-content" id="msg-${msg.id}">
+                        <div style="text-align: center; padding: 20px;">
+                            <div class="spinner" style="width: 30px; height: 30px;"></div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(div);
+            });
+        }
+        
+        async function loadMessageContent(messageId, element) {
+            const contentDiv = element.querySelector(`#msg-${messageId}`);
+            if (contentDiv.dataset.loaded) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/messages/${API_KEY}/message/${messageId}`);
+                if (!response.ok) throw new Error('Failed to load message');
+                
+                const data = await response.json();
+                
+                if (data.status && data.data) {
+                    const msg = data.data;
+                    let html = `<div class="message-body">`;
+                    html += msg.html ? msg.content : (msg.content || 'No content').replace(/\n/g, '<br>');
+                    html += '</div>';
+                    
+                    if (msg.attachments && msg.attachments.length > 0) {
+                        html += '<div class="attachments">';
+                        msg.attachments.forEach(att => {
+                            html += `<a href="${att.url}" target="_blank" class="attachment-link">📎 ${att.name}</a>`;
+                        });
+                        html += '</div>';
+                    }
+                    
+                    html += `<button class="danger" onclick="deleteMessage('${messageId}', event)" style="padding: 10px 20px;">🗑️ Delete Message</button>`;
+                    
+                    contentDiv.innerHTML = html;
+                    contentDiv.dataset.loaded = 'true';
+                }
+            } catch (error) {
+                console.error('Load error:', error);
+                contentDiv.innerHTML = `<p style="color: #d63031;">Error loading message</p>`;
+            }
+        }
+        
+        async function deleteMessage(messageId, event) {
+            event.stopPropagation();
+            if (!confirm('Delete this message?')) return;
+            
+            showLoading();
+            try {
+                const response = await fetch(`${API_BASE}/messages/${API_KEY}/message/${messageId}`, { 
+                    method: 'POST' 
+                });
+                const data = await response.json();
+                
+                if (response.ok && data.status) {
+                    showToast('✅ Message deleted');
+                    await checkMessages();
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                showToast('Error deleting message', true);
+            }
+            hideLoading();
+        }
+        
+        async function deleteEmail() {
+            if (!currentEmail) {
+                showToast('No active email', true);
+                return;
+            }
+            
+            if (!confirm('Delete this email? All messages will be lost.')) return;
+            
+            showLoading();
+            try {
+                const response = await fetch(`${API_BASE}/emails/${API_KEY}/${currentEmail}`, { 
+                    method: 'POST' 
+                });
+                const data = await response.json();
+                
+                if (response.ok && data.status) {
+                    localStorage.removeItem('tempEmail');
+                    localStorage.removeItem('tempEmailData');
+                    stopPolling();
+                    currentEmail = null;
+                    emailData = null;
+                    
+                    document.getElementById('emailCard').style.display = 'none';
+                    document.getElementById('messagesList').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📭</div>
+                            <p>Email deleted</p>
+                            <p style="margin-top: 10px; font-size: 14px;">Create a new email to continue</p>
+                        </div>
+                    `;
+                    document.getElementById('messageCount').textContent = '0 messages';
+                    showToast('✅ Email deleted');
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                showToast('Error deleting email', true);
+            }
+            hideLoading();
+        }
+        
+        function copyEmail() {
+            if (!currentEmail) {
+                showToast('No email to copy', true);
+                return;
+            }
+            
+            navigator.clipboard.writeText(currentEmail).then(() => {
+                showToast('✅ Copied to clipboard!');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = currentEmail;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('✅ Copied!');
+            });
+        }
+        
+        // Manual refresh
+        async function refreshMessages() {
+            if (!currentEmail) {
+                showToast('No active email', true);
+                return;
+            }
+            showLoading();
+            await checkMessages();
+            hideLoading();
+        }
+        
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            stopPolling();
+        });
+    </script>
+</body>
+</html>
