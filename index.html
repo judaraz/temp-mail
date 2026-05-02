@@ -202,6 +202,7 @@ body {
     cursor: pointer;
     transition: all 0.2s;
     font-size: 18px;
+    position: relative;
 }
 
 .btn-icon:hover {
@@ -215,10 +216,34 @@ body {
     border-color: var(--danger);
 }
 
+.btn-icon.refreshing {
+    animation: rotate360 1s linear infinite;
+}
+
+@keyframes rotate360 {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
 .btn-icon.copy-success {
     background: var(--success);
     border-color: var(--success);
     color: white;
+}
+
+/* Badge for new messages */
+.badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--danger);
+    color: white;
+    border-radius: 10px;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 18px;
+    text-align: center;
 }
 
 /* Inbox */
@@ -241,6 +266,15 @@ body {
     border-radius: 20px;
     font-size: 12px;
     font-weight: 600;
+}
+
+.message-count.has-new {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
 }
 
 .refresh-indicator {
@@ -281,6 +315,11 @@ body {
     animation: slideIn 0.3s ease-out;
 }
 
+.message-card.new-message {
+    border-left: 3px solid var(--accent);
+    animation: newMessageGlow 2s ease-out;
+}
+
 @keyframes slideIn {
     from {
         opacity: 0;
@@ -290,6 +329,11 @@ body {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+@keyframes newMessageGlow {
+    0% { box-shadow: 0 0 20px rgba(79, 70, 229, 0.3); }
+    100% { box-shadow: 0 0 0px rgba(79, 70, 229, 0); }
 }
 
 .message-card:hover {
@@ -312,6 +356,17 @@ body {
     flex: 1;
     margin-right: 12px;
     line-height: 1.4;
+}
+
+.new-indicator {
+    background: var(--accent);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    animation: pulse 1.5s infinite;
 }
 
 .message-meta {
@@ -390,19 +445,6 @@ body {
     font-size: 14px;
 }
 
-/* Loading skeleton */
-.skeleton {
-    background: linear-gradient(90deg, var(--bg-card) 25%, var(--border) 50%, var(--bg-card) 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-    border-radius: 8px;
-}
-
-@keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-
 /* Toast */
 .toast {
     position: fixed;
@@ -438,6 +480,14 @@ body {
     to {
         opacity: 0;
     }
+}
+
+/* Last refresh time */
+.last-refresh {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-top: 16px;
 }
 
 /* Responsive */
@@ -486,7 +536,7 @@ body {
         </div>
         <div class="email-actions">
             <button class="btn-icon" onclick="copyEmail()" title="Copy email" id="copyBtn">📋</button>
-            <button class="btn-icon" onclick="refreshInbox()" title="Refresh inbox">🔄</button>
+            <button class="btn-icon" onclick="refreshInbox()" title="Refresh inbox" id="refreshBtn">🔄</button>
             <button class="btn-icon danger" onclick="deleteEmail()" title="Delete email">🗑️</button>
         </div>
     </div>
@@ -509,6 +559,8 @@ body {
             <p>No emails yet. Create an email address to get started!</p>
         </div>
     </div>
+
+    <div class="last-refresh" id="lastRefresh"></div>
 </div>
 
 <script>
@@ -519,6 +571,7 @@ let currentEmail = localStorage.getItem('tempEmail');
 let pollInterval = null;
 let isPolling = false;
 let messageCache = new Map();
+let knownMessageIds = new Set(); // Track known messages to detect new ones
 
 /* TOAST NOTIFICATION */
 function showToast(message, type = 'success') {
@@ -593,7 +646,10 @@ async function createEmail() {
         document.getElementById('currentEmailBox').style.display = 'flex';
         document.getElementById('emailName').value = '';
         
+        // Reset tracking
         messageCache.clear();
+        knownMessageIds.clear();
+        
         startPolling();
         showToast('Email created successfully! 📨');
 
@@ -633,15 +689,34 @@ async function copyEmail() {
     }
 }
 
-/* REFRESH INBOX */
+/* REFRESH INBOX - CRITICAL FIX */
 async function refreshInbox() {
+    const refreshBtn = document.getElementById('refreshBtn');
     const statusEl = document.getElementById('refreshStatus');
+    
+    // Visual feedback
+    refreshBtn.classList.add('refreshing');
     statusEl.style.display = 'inline-flex';
+    
+    // Force clear cache to ensure fresh data
+    messageCache.clear();
+    knownMessageIds.clear();
     
     await checkMessages(true);
     
+    // Update last refresh time
+    updateLastRefreshTime();
+    
+    // Remove visual feedback
+    refreshBtn.classList.remove('refreshing');
     statusEl.style.display = 'none';
     showToast('Inbox refreshed! 🔄');
+}
+
+function updateLastRefreshTime() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString();
+    document.getElementById('lastRefresh').textContent = `Last refreshed: ${timeStr}`;
 }
 
 /* DELETE EMAIL */
@@ -668,6 +743,7 @@ async function deleteEmail() {
         currentEmail = null;
         localStorage.removeItem('tempEmail');
         messageCache.clear();
+        knownMessageIds.clear();
 
         document.getElementById('currentEmailBox').style.display = 'none';
         document.getElementById('currentEmail').textContent = '';
@@ -678,6 +754,8 @@ async function deleteEmail() {
             </div>
         `;
         document.getElementById('messageCount').textContent = '0';
+        document.getElementById('messageCount').classList.remove('has-new');
+        document.getElementById('lastRefresh').textContent = '';
 
         showToast('Email deleted successfully! 🗑️');
 
@@ -687,78 +765,141 @@ async function deleteEmail() {
     }
 }
 
-/* START POLLING */
+/* START POLLING - CRITICAL FIX */
 function startPolling() {
     if (pollInterval) {
         clearInterval(pollInterval);
     }
 
+    // Immediate first check
     checkMessages();
+    updateLastRefreshTime();
 
+    // Poll every 8 seconds - CRITICAL: This is what keeps checking for new messages
     pollInterval = setInterval(() => {
         if (currentEmail && !isPolling) {
             checkMessages();
+            updateLastRefreshTime();
         }
     }, 8000);
 }
 
-/* CHECK MESSAGES */
+/* CHECK MESSAGES - CRITICAL FIX */
 async function checkMessages(forceUpdate = false) {
     if (!currentEmail || isPolling) return;
     isPolling = true;
 
     try {
-        console.log("📡 Fetching messages...");
+        console.log("📡 Fetching messages for:", currentEmail);
 
+        // Primary API call
         const res = await fetch(
-            `${API_BASE}/messages/${API_KEY}/${encodeURIComponent(currentEmail)}`
+            `${API_BASE}/messages/${API_KEY}/${encodeURIComponent(currentEmail)}`,
+            {
+                cache: 'no-store', // Critical: Don't cache API responses
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                }
+            }
         );
 
-        if (!res.ok) throw new Error("API failed");
+        if (res.ok) {
+            const data = await res.json();
+            console.log("📨 API Response:", data);
 
-        const data = await res.json();
-        console.log("📨 API Response:", data);
-
-        if (data.status && data.messages) {
-            renderMessages(data.messages);
-            document.getElementById('messageCount').textContent = data.messages.length;
-            return;
-        }
-
-        throw new Error("No messages in response");
-
-    } catch (e) {
-        console.warn("⚠️ Primary API failed, trying fallback...");
-
-        try {
-            const formData = new FormData();
-            formData.append('email', currentEmail);
-
-            const fallback = await fetch('https://tempmail44.com/get_messages', {
-                method: 'POST',
-                body: formData
-            });
-
-            const data = await fallback.json();
-            console.log("📨 Fallback Response:", data);
-
-            const messages = data.messages || data.data?.messages || [];
-            renderMessages(messages);
-            document.getElementById('messageCount').textContent = messages.length;
-
-        } catch (err) {
-            console.error("❌ All fetch methods failed:", err);
-            if (forceUpdate) {
-                showToast('Failed to fetch messages. Please try again.', 'error');
+            if (data.status && data.messages) {
+                processNewMessages(data.messages, forceUpdate);
+                return;
             }
         }
+
+        // Fallback method if API fails
+        console.log("⚠️ API failed or no messages, trying fallback...");
+        await fallbackFetch(forceUpdate);
+
+    } catch (e) {
+        console.warn("⚠️ Primary API error:", e.message);
+        await fallbackFetch(forceUpdate);
     }
 
     isPolling = false;
 }
 
-/* RENDER MESSAGES */
-function renderMessages(messages) {
+/* FALLBACK FETCH */
+async function fallbackFetch(forceUpdate) {
+    try {
+        const formData = new FormData();
+        formData.append('email', currentEmail);
+
+        const fallback = await fetch('https://tempmail44.com/get_messages', {
+            method: 'POST',
+            body: formData,
+            cache: 'no-store',
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
+            }
+        });
+
+        const data = await fallback.json();
+        console.log("📨 Fallback Response:", data);
+
+        const messages = data.messages || data.data?.messages || [];
+        processNewMessages(messages, forceUpdate);
+
+    } catch (err) {
+        console.error("❌ All fetch methods failed:", err);
+        document.getElementById('messageCount').textContent = '?';
+    }
+}
+
+/* PROCESS NEW MESSAGES - CRITICAL FIX */
+function processNewMessages(messages, forceUpdate) {
+    if (!Array.isArray(messages)) {
+        messages = [];
+    }
+
+    console.log(`📊 Processing ${messages.length} messages`);
+    document.getElementById('messageCount').textContent = messages.length;
+
+    // Check for new messages
+    let hasNewMessages = false;
+    const currentMessageIds = new Set();
+
+    messages.forEach(msg => {
+        const msgId = msg.hash || msg.id || JSON.stringify(msg);
+        currentMessageIds.add(msgId);
+
+        if (!knownMessageIds.has(msgId)) {
+            hasNewMessages = true;
+            console.log('🆕 New message detected:', msg.subject);
+        }
+    });
+
+    // Update known messages
+    knownMessageIds = currentMessageIds;
+
+    // Update UI with new message indicator
+    if (hasNewMessages && !forceUpdate) {
+        document.getElementById('messageCount').classList.add('has-new');
+        showToast('New message received! 📨');
+    }
+
+    // Always render if forced update or new messages
+    if (forceUpdate || hasNewMessages) {
+        renderMessages(messages, hasNewMessages && !forceUpdate);
+        // Clear the new badge after 3 seconds
+        if (hasNewMessages) {
+            setTimeout(() => {
+                document.getElementById('messageCount').classList.remove('has-new');
+            }, 3000);
+        }
+    }
+}
+
+/* RENDER MESSAGES - CRITICAL FIX */
+function renderMessages(messages, hasNew = false) {
     const box = document.getElementById('messagesList');
 
     if (!messages || messages.length === 0) {
@@ -771,18 +912,22 @@ function renderMessages(messages) {
         return;
     }
 
-    // Check if messages changed
-    const newHash = JSON.stringify(messages);
-    if (messageCache.get('lastHash') === newHash) {
-        return; // No changes, don't re-render
-    }
-    messageCache.set('lastHash', newHash);
-
+    // Clear and rebuild
     box.innerHTML = '';
 
     messages.forEach((m, index) => {
         const card = document.createElement('div');
         card.className = 'message-card';
+        
+        // Check if this is a new message
+        const msgId = m.hash || m.id || '';
+        const isNew = hasNew && !messageCache.has(msgId);
+        
+        if (isNew) {
+            card.classList.add('new-message');
+            messageCache.set(msgId, true);
+        }
+
         card.style.animationDelay = `${index * 0.05}s`;
 
         const subject = m.subject || 'No Subject';
@@ -795,6 +940,7 @@ function renderMessages(messages) {
         card.innerHTML = `
             <div class="message-header">
                 <div class="message-subject">${escapeHtml(subject)}</div>
+                ${isNew ? '<span class="new-indicator">NEW</span>' : ''}
             </div>
             <div class="message-meta">
                 <div class="meta-item">
@@ -820,6 +966,8 @@ function renderMessages(messages) {
 
         box.appendChild(card);
     });
+
+    console.log(`✅ Rendered ${messages.length} messages`);
 }
 
 /* OPEN MESSAGE */
@@ -842,8 +990,11 @@ async function deleteMessage(hash) {
 
         if (res.ok) {
             showToast('Message deleted! 🗑️');
-            // Refresh inbox
-            setTimeout(() => checkMessages(true), 500);
+            // Remove from known messages
+            knownMessageIds.delete(hash);
+            messageCache.delete(hash);
+            // Force refresh
+            setTimeout(() => refreshInbox(), 300);
         } else {
             throw new Error('Delete failed');
         }
@@ -877,17 +1028,36 @@ window.onload = () => {
     }
 };
 
-// Handle page visibility
+// Handle page visibility - CRITICAL for Telegram mini-app
 document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
+        // Page hidden - stop polling to save resources
         if (pollInterval) {
             clearInterval(pollInterval);
             pollInterval = null;
+            console.log('⏸️ Polling paused (page hidden)');
         }
-    } else if (currentEmail) {
+    } else {
+        // Page visible again - resume polling
+        if (currentEmail) {
+            console.log('▶️ Resuming polling');
+            // Force immediate refresh when becoming visible
+            checkMessages(true);
+            startPolling();
+        }
+    }
+});
+
+// Also listen for focus/blur as backup
+window.addEventListener('focus', () => {
+    if (currentEmail && !pollInterval) {
+        console.log('🔄 Window focused - refreshing');
+        checkMessages(true);
         startPolling();
     }
 });
+
+console.log('🚀 TempMail44 Mini-App initialized');
 </script>
 
 </body>
