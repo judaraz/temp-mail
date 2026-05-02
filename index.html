@@ -40,7 +40,6 @@
       flex-direction: column;
       gap: 18px;
     }
-    /* Header */
     .header {
       background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
       border-radius: var(--radius-lg);
@@ -50,16 +49,8 @@
       justify-content: space-between;
       box-shadow: var(--shadow);
     }
-    .header h1 {
-      font-size: 1.7rem;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-    }
-    .header .subtitle {
-      font-size: 0.75rem;
-      opacity: 0.8;
-    }
-    /* Creator */
+    .header h1 { font-size: 1.7rem; font-weight: 700; }
+    .header .subtitle { font-size: 0.75rem; opacity: 0.8; }
     .email-creator {
       background: var(--bg-secondary);
       border-radius: var(--radius-lg);
@@ -112,7 +103,6 @@
       transition: background 0.2s, transform 0.1s;
     }
     .btn:active { transform: scale(0.97); background: var(--accent-hover); }
-    /* Current Email Card */
     .current-email {
       background: var(--bg-secondary);
       border-radius: var(--radius-lg);
@@ -124,10 +114,7 @@
       gap: 12px;
       flex-wrap: wrap;
     }
-    .email-display {
-      flex: 1;
-      min-width: 0;
-    }
+    .email-display { flex: 1; min-width: 0; }
     .email-label {
       font-size: 0.7rem;
       text-transform: uppercase;
@@ -141,11 +128,7 @@
       word-break: break-all;
       color: var(--accent);
     }
-    .email-actions {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
+    .email-actions { display: flex; gap: 8px; align-items: center; }
     .btn-icon {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -159,44 +142,15 @@
       cursor: pointer;
       font-size: 1.2rem;
       transition: all 0.2s;
-      position: relative;
-      background: var(--bg-card);
     }
-    .btn-icon:hover {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: white;
-    }
-    .btn-icon.danger:hover {
-      background: var(--danger);
-      border-color: var(--danger);
-    }
-    .badge {
-      position: absolute;
-      top: -6px;
-      right: -6px;
-      background: var(--danger);
-      color: white;
-      border-radius: 12px;
-      padding: 2px 7px;
-      font-size: 0.7rem;
-      font-weight: 700;
-      min-width: 18px;
-      text-align: center;
-    }
-    /* Inbox header */
+    .btn-icon:hover { background: var(--accent); border-color: var(--accent); color: white; }
+    .btn-icon.danger:hover { background: var(--danger); border-color: var(--danger); }
     .inbox-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-    .inbox-header h3 {
-      font-size: 1.2rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .inbox-header h3 { font-size: 1.2rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
     .message-count {
       background: var(--accent);
       padding: 4px 13px;
@@ -220,12 +174,7 @@
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    /* Messages */
-    .messages-container {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+    .messages-container { display: flex; flex-direction: column; gap: 12px; }
     .message-card {
       background: var(--bg-secondary);
       border: 1px solid var(--border);
@@ -234,9 +183,7 @@
       transition: 0.2s;
       animation: fadeSlide 0.25s ease;
     }
-    .message-card.new-message {
-      border-left: 4px solid var(--accent);
-    }
+    .message-card.new-message { border-left: 4px solid var(--accent); }
     @keyframes fadeSlide {
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
@@ -247,12 +194,7 @@
       align-items: flex-start;
       margin-bottom: 10px;
     }
-    .message-subject {
-      font-weight: 600;
-      font-size: 1rem;
-      word-break: break-word;
-      padding-right: 8px;
-    }
+    .message-subject { font-weight: 600; font-size: 1rem; word-break: break-word; padding-right: 8px; }
     .new-indicator {
       background: var(--accent);
       color: white;
@@ -289,30 +231,12 @@
       gap: 4px;
       transition: 0.2s;
     }
-    .btn-primary {
-      background: var(--accent);
-      color: white;
-    }
+    .btn-primary { background: var(--accent); color: white; }
     .btn-primary:hover { background: var(--accent-hover); }
-    .btn-danger {
-      background: transparent;
-      border: 1px solid var(--danger);
-      color: var(--danger);
-    }
-    .btn-danger:hover {
-      background: var(--danger);
-      color: white;
-    }
-    .empty-state {
-      text-align: center;
-      padding: 35px 15px;
-      color: var(--text-secondary);
-    }
-    .last-refresh {
-      font-size: 0.7rem;
-      color: var(--text-secondary);
-      text-align: center;
-    }
+    .btn-danger { background: transparent; border: 1px solid var(--danger); color: var(--danger); }
+    .btn-danger:hover { background: var(--danger); color: white; }
+    .empty-state { text-align: center; padding: 35px 15px; color: var(--text-secondary); }
+    .last-refresh { font-size: 0.7rem; color: var(--text-secondary); text-align: center; }
     .toast {
       position: fixed;
       top: 20px;
@@ -341,8 +265,8 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(4px);
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(6px);
       z-index: 1000;
       display: flex;
       align-items: center;
@@ -350,10 +274,7 @@
       padding: 16px;
       animation: fadeIn 0.2s ease;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     .modal-content {
       background: var(--bg-secondary);
       border: 1px solid var(--border);
@@ -378,12 +299,7 @@
       align-items: flex-start;
       gap: 12px;
     }
-    .modal-header h3 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      word-break: break-word;
-      flex: 1;
-    }
+    .modal-header h3 { font-size: 1.1rem; font-weight: 600; word-break: break-word; flex: 1; }
     .modal-close {
       background: none;
       border: none;
@@ -394,10 +310,7 @@
       border-radius: 8px;
       line-height: 1;
     }
-    .modal-close:hover {
-      background: var(--bg-card);
-      color: white;
-    }
+    .modal-close:hover { background: var(--bg-card); color: white; }
     .modal-meta {
       padding: 12px 20px;
       display: flex;
@@ -413,6 +326,7 @@
       flex: 1;
       word-break: break-word;
       line-height: 1.7;
+      max-height: 50vh;
     }
     .modal-body iframe {
       width: 100%;
@@ -421,11 +335,7 @@
       background: white;
       border-radius: 8px;
     }
-    .modal-body img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 8px;
-    }
+    .modal-body img { max-width: 100%; height: auto; border-radius: 8px; }
     .modal-body pre {
       background: var(--bg-card);
       padding: 12px;
@@ -433,6 +343,7 @@
       overflow-x: auto;
       white-space: pre-wrap;
       font-size: 0.85rem;
+      font-family: inherit;
     }
     .modal-footer {
       padding: 14px 20px;
@@ -460,7 +371,6 @@
     </div>
   </div>
 
-  <!-- Email creator -->
   <div class="email-creator">
     <div class="input-group">
       <input type="text" id="emailName" placeholder="Your username (optional)" maxlength="24">
@@ -471,7 +381,6 @@
     </button>
   </div>
 
-  <!-- Current email box -->
   <div class="current-email" id="currentEmailBox" style="display: none;">
     <div class="email-display">
       <div class="email-label">Your active email</div>
@@ -484,7 +393,6 @@
     </div>
   </div>
 
-  <!-- Inbox -->
   <div class="inbox-header">
     <h3>📥 Inbox</h3>
     <div style="display: flex; align-items: center; gap: 12px;">
@@ -530,9 +438,10 @@
     let pollTimer = null;
     let isPolling = false;
     let knownMessageIds = new Set();
-    let currentViewingHash = null; // Track which message is being viewed
+    let currentViewingHash = null;
+    // Store full message list for quick access
+    let messageListCache = [];
 
-    // Toast
     function showToast(msg, isError = false) {
       const old = document.querySelector('.toast');
       if (old) old.remove();
@@ -544,7 +453,6 @@
       setTimeout(() => t.remove(), 2100);
     }
 
-    // Escape HTML
     function escapeStr(text) {
       return String(text).replace(/[&<>"]/g, function(m) {
         if (m === '&') return '&amp;';
@@ -567,6 +475,7 @@
       try {
         await fetch(`${API_BASE}/messages/${API_KEY}/${currentViewingHash}`, { method: 'DELETE' });
         knownMessageIds.delete(currentViewingHash);
+        messageListCache = messageListCache.filter(m => (m.hash || m.id) !== currentViewingHash);
         showToast('Message deleted');
         closeModal();
         await checkMessages(true);
@@ -575,6 +484,7 @@
       }
     };
 
+    // FIXED: Improved message opening with multiple fallback methods
     async function openMessageInModal(hash) {
       if (!hash) return;
       currentViewingHash = hash;
@@ -588,63 +498,148 @@
       modalMeta.innerHTML = '';
       modalBody.innerHTML = '<div class="loading-spinner"><div class="spinner"></div> Loading message...</div>';
       
-      try {
-        // Fetch single message content
-        const res = await fetch(`${API_BASE}/messages/${API_KEY}/${hash}`, {
-          cache: 'no-store',
-          headers: { 'Cache-Control': 'no-cache' }
-        });
-        
-        if (!res.ok) throw new Error('Failed to fetch message');
-        
-        const data = await res.json();
-        const message = data.data || data.message || data;
-        
-        if (!message) throw new Error('Message not found');
-        
-        // Populate modal
-        const subject = message.subject || 'No Subject';
-        const from = message.from || message.from_email || 'Unknown';
-        const to = message.to || currentEmail || '';
-        const date = message.time || message.created_at || message.date || '';
-        const dateStr = date ? new Date(date).toLocaleString() : 'Unknown date';
-        const body = message.body || message.text || message.html || message.content || '';
-        const htmlBody = message.html || message.body_html || '';
-        
-        modalSubject.textContent = subject;
-        modalMeta.innerHTML = `
-          <span>👤 <strong>From:</strong> ${escapeStr(from)}</span>
-          <span>📧 <strong>To:</strong> ${escapeStr(to)}</span>
-          <span>🕒 <strong>Date:</strong> ${dateStr}</span>
-        `;
-        
-        // Render body - prefer HTML if available
-        if (htmlBody) {
-          // Sanitize and display HTML
-          modalBody.innerHTML = htmlBody;
-        } else if (body) {
-          // Check if it looks like HTML
-          if (body.trim().startsWith('<') && body.includes('>')) {
-            modalBody.innerHTML = body;
-          } else {
-            // Plain text - escape and preserve line breaks
-            modalBody.innerHTML = `<pre style="white-space: pre-wrap; font-family: inherit; background: none; padding: 0;">${escapeStr(body)}</pre>`;
-          }
-        } else {
-          modalBody.innerHTML = '<p style="color: var(--text-secondary);">(No content)</p>';
-        }
-        
-      } catch (err) {
-        console.error('Error loading message:', err);
-        modalBody.innerHTML = '<p style="color: var(--danger);">❌ Failed to load message. It may have been deleted.</p>';
-        // Try fallback - open in website as last resort
-        setTimeout(() => {
-          if (confirm('Could not load message in app. Open in browser?')) {
-            window.open(`https://tempmail44.com/view/${hash}`, '_blank');
-          }
-          closeModal();
-        }, 500);
+      let messageData = null;
+      
+      // Method 1: Try to find message in cached list first (fastest)
+      const cachedMessage = messageListCache.find(m => (m.hash || m.id) === hash);
+      if (cachedMessage && (cachedMessage.body || cachedMessage.text || cachedMessage.html)) {
+        console.log('✅ Using cached message data');
+        messageData = cachedMessage;
       }
+      
+      // Method 2: Try API endpoint for single message
+      if (!messageData) {
+        try {
+          console.log('🔍 Trying API endpoint for message:', hash);
+          const res = await fetch(`${API_BASE}/messages/${API_KEY}/${hash}`, {
+            cache: 'no-store',
+            headers: { 'Cache-Control': 'no-cache' }
+          });
+          
+          if (res.ok) {
+            const data = await res.json();
+            console.log('📨 API Response:', data);
+            
+            // Handle different response structures
+            if (data.data && (data.data.body || data.data.text || data.data.html)) {
+              messageData = data.data;
+            } else if (data.message && (data.message.body || data.message.text)) {
+              messageData = data.message;
+            } else if (data.body || data.text || data.html) {
+              messageData = data;
+            }
+          }
+        } catch (e) {
+          console.warn('⚠️ API method failed:', e.message);
+        }
+      }
+      
+      // Method 3: Try fallback POST request
+      if (!messageData) {
+        try {
+          console.log('🔍 Trying fallback method...');
+          const formData = new FormData();
+          formData.append('email', currentEmail);
+          formData.append('hash', hash);
+          
+          const fallbackRes = await fetch('https://tempmail44.com/get_message', {
+            method: 'POST',
+            body: formData,
+            cache: 'no-store'
+          });
+          
+          if (fallbackRes.ok) {
+            const data = await fallbackRes.json();
+            console.log('📨 Fallback Response:', data);
+            
+            if (data.message) {
+              messageData = data.message;
+            } else if (data.data) {
+              messageData = data.data;
+            } else if (data.body || data.text) {
+              messageData = data;
+            }
+          }
+        } catch (e) {
+          console.warn('⚠️ Fallback method failed:', e.message);
+        }
+      }
+      
+      // Method 4: Try to fetch all messages and find this one
+      if (!messageData && currentEmail) {
+        try {
+          console.log('🔍 Trying to find message in full list...');
+          const allMessages = await fetchMessages();
+          const found = allMessages.find(m => (m.hash || m.id) === hash);
+          if (found) {
+            messageData = found;
+            // Update cache
+            messageListCache = allMessages;
+          }
+        } catch (e) {
+          console.warn('⚠️ List method failed:', e.message);
+        }
+      }
+      
+      // Display the message if found
+      if (messageData) {
+        displayMessageInModal(messageData);
+      } else {
+        // If all methods fail, show error with option to open in browser
+        console.error('❌ Could not load message content');
+        modalBody.innerHTML = `
+          <div style="text-align: center; padding: 20px;">
+            <p style="color: var(--danger); margin-bottom: 16px;">❌ Could not load message content</p>
+            <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.9rem;">
+              The message might have been deleted or the server is unavailable.
+            </p>
+            <button class="btn-sm btn-primary" onclick="window.open('https://tempmail44.com/view/${hash}', '_blank')">
+              🌐 Open in Browser
+            </button>
+          </div>
+        `;
+      }
+    }
+    
+    function displayMessageInModal(message) {
+      const modalSubject = document.getElementById('modalSubject');
+      const modalMeta = document.getElementById('modalMeta');
+      const modalBody = document.getElementById('modalBody');
+      
+      const subject = message.subject || 'No Subject';
+      const from = message.from || message.from_email || 'Unknown';
+      const to = message.to || currentEmail || '';
+      const date = message.time || message.created_at || message.date || '';
+      const dateStr = date ? new Date(date).toLocaleString() : 'Unknown date';
+      
+      // Get body content - check all possible fields
+      const body = message.body || message.text || message.content || '';
+      const htmlBody = message.html || message.body_html || message.message_html || '';
+      
+      modalSubject.textContent = subject;
+      modalMeta.innerHTML = `
+        <span>👤 <strong>From:</strong> ${escapeStr(from)}</span>
+        <span>📧 <strong>To:</strong> ${escapeStr(to)}</span>
+        <span>🕒 <strong>Date:</strong> ${dateStr}</span>
+      `;
+      
+      // Render body content
+      if (htmlBody && htmlBody.trim().length > 0) {
+        // HTML content available
+        modalBody.innerHTML = htmlBody;
+      } else if (body && body.trim().length > 0) {
+        // Check if body contains HTML
+        if (body.trim().startsWith('<') && body.includes('>')) {
+          modalBody.innerHTML = body;
+        } else {
+          // Plain text - escape and preserve formatting
+          modalBody.innerHTML = `<pre style="white-space: pre-wrap; font-family: inherit; background: none; padding: 0; color: var(--text-primary);">${escapeStr(body)}</pre>`;
+        }
+      } else {
+        modalBody.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">📭 This message has no content</p>';
+      }
+      
+      console.log('✅ Message displayed successfully');
     }
 
     // Load domains
@@ -667,7 +662,6 @@
       }
     }
 
-    // Update UI with current email
     function showCurrentEmailBox(email) {
       document.getElementById('currentEmailText').textContent = email;
       document.getElementById('currentEmailBox').style.display = 'flex';
@@ -678,7 +672,6 @@
       document.getElementById('currentEmailText').textContent = '';
     }
 
-    // Copy to clipboard
     window.copyEmail = async function() {
       if (!currentEmail) return;
       try {
@@ -698,17 +691,16 @@
       }
     };
 
-    // Refresh inbox manually
     window.refreshInbox = async function() {
       if (!currentEmail) return;
       const refreshBtn = document.getElementById('refreshBtn');
       const statusEl = document.getElementById('refreshStatus');
-      refreshBtn.style.transform = 'rotate(0deg)';
-      refreshBtn.style.transition = '0.3s';
       refreshBtn.style.transform = 'rotate(360deg)';
+      refreshBtn.style.transition = '0.3s';
       statusEl.style.display = 'flex';
       
       knownMessageIds.clear();
+      messageListCache = [];
       await checkMessages(true);
       
       setTimeout(() => {
@@ -723,7 +715,6 @@
       document.getElementById('lastRefresh').textContent = `Last check: ${now.toLocaleTimeString()}`;
     }
 
-    // Delete email account
     window.deleteEmailAccount = async function() {
       if (!currentEmail) return;
       if (!confirm('Delete this temporary email? All messages will be lost.')) return;
@@ -733,6 +724,7 @@
         currentEmail = null;
         localStorage.removeItem('tempEmail');
         knownMessageIds.clear();
+        messageListCache = [];
         hideCurrentEmailBox();
         document.getElementById('messagesList').innerHTML = '<div class="empty-state">📭 Email deleted</div>';
         document.getElementById('messageCount').textContent = '0';
@@ -743,7 +735,6 @@
       }
     };
 
-    // Create email
     window.createEmail = async function() {
       const btn = document.getElementById('createBtn');
       btn.disabled = true;
@@ -764,6 +755,7 @@
         showCurrentEmailBox(email);
         document.getElementById('emailName').value = '';
         knownMessageIds.clear();
+        messageListCache = [];
         startPolling();
         showToast('Email ready!');
       } catch (e) {
@@ -774,22 +766,34 @@
       }
     };
 
-    // Fetch messages
+    // Fetch messages - returns array
     async function fetchMessages() {
       const url = `${API_BASE}/messages/${API_KEY}/${encodeURIComponent(currentEmail)}`;
-      const res = await fetch(url, { cache: 'no-store', headers: {'Cache-Control': 'no-cache'} });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.status && Array.isArray(data.messages)) return data.messages;
+      try {
+        const res = await fetch(url, { cache: 'no-store', headers: {'Cache-Control': 'no-cache'} });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status && Array.isArray(data.messages)) {
+            return data.messages;
+          }
+        }
+      } catch (e) {
+        console.warn('Primary fetch failed:', e.message);
       }
-      // fallback
-      const formData = new FormData();
-      formData.append('email', currentEmail);
-      const fallbackRes = await fetch('https://tempmail44.com/get_messages', {
-        method: 'POST', body: formData, cache: 'no-store'
-      });
-      const fallbackData = await fallbackRes.json();
-      return fallbackData.messages || fallbackData.data?.messages || [];
+      
+      // Fallback
+      try {
+        const formData = new FormData();
+        formData.append('email', currentEmail);
+        const fallbackRes = await fetch('https://tempmail44.com/get_messages', {
+          method: 'POST', body: formData, cache: 'no-store'
+        });
+        const fallbackData = await fallbackRes.json();
+        return fallbackData.messages || fallbackData.data?.messages || [];
+      } catch (e) {
+        console.warn('Fallback fetch failed:', e.message);
+        return [];
+      }
     }
 
     async function checkMessages(forceRender = false) {
@@ -797,7 +801,9 @@
       isPolling = true;
       try {
         const messages = await fetchMessages();
+        messageListCache = messages; // Update cache
         document.getElementById('messageCount').textContent = messages.length;
+        
         let newDetected = false;
         const currentIds = new Set();
         messages.forEach(m => {
@@ -806,6 +812,7 @@
           if (!knownMessageIds.has(id)) newDetected = true;
         });
         knownMessageIds = currentIds;
+        
         if (newDetected || forceRender) {
           renderMessages(messages, newDetected);
           if (newDetected) {
@@ -831,7 +838,7 @@
       container.innerHTML = '';
       messages.forEach((m, idx) => {
         const id = m.hash || m.id || '';
-        const isNewCard = highlightNew && !knownMessageIds.has(id) ? true : false;
+        const isNewCard = highlightNew && !knownMessageIds.has(id);
         const card = document.createElement('div');
         card.className = 'message-card' + (isNewCard ? ' new-message' : '');
         card.style.animationDelay = `${idx * 0.03}s`;
@@ -856,7 +863,7 @@
         container.appendChild(card);
       });
       
-      // Attach view events - NOW OPENS IN MODAL
+      // View button - opens modal
       document.querySelectorAll('.view-msg-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           const hash = e.currentTarget.getAttribute('data-hash');
@@ -864,7 +871,7 @@
         });
       });
       
-      // Attach delete events
+      // Delete button
       document.querySelectorAll('.delete-msg-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
           const hash = e.currentTarget.getAttribute('data-hash');
@@ -873,6 +880,7 @@
           try {
             await fetch(`${API_BASE}/messages/${API_KEY}/${hash}`, { method: 'DELETE' });
             knownMessageIds.delete(hash);
+            messageListCache = messageListCache.filter(m => (m.hash || m.id) !== hash);
             showToast('Message deleted');
             await checkMessages(true);
           } catch (err) {
@@ -894,21 +902,15 @@
       }, 8000);
     }
 
-    // Close modal on overlay click
+    // Close modal handlers
     document.getElementById('messageModal').addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeModal();
-      }
+      if (e.target === this) closeModal();
     });
-
-    // Close modal on Escape key
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        closeModal();
-      }
+      if (e.key === 'Escape') closeModal();
     });
 
-    // Visibility / focus handlers
+    // Visibility handlers
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden && currentEmail) {
         checkMessages(true);
@@ -922,7 +924,7 @@
       if (currentEmail && !pollTimer) startPolling();
     });
 
-    // Init Telegram Web App
+    // Telegram Web App
     if (window.Telegram?.WebApp) {
       window.Telegram.WebApp.ready();
       window.Telegram.WebApp.expand();
