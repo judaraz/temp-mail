@@ -1,1064 +1,697 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>TempMail44 - Temporary Email</title>
-
-<script src="https://telegram.org/js/telegram-web-app.js?56"></script>
-
-<style>
-:root {
-    --bg-primary: #0a0e27;
-    --bg-secondary: #131837;
-    --bg-card: #1a1f3a;
-    --accent: #4f46e5;
-    --accent-hover: #6366f1;
-    --danger: #ef4444;
-    --danger-hover: #dc2626;
-    --success: #10b981;
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
-    --border: #2d3454;
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
-
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-    background: var(--bg-primary);
-    min-height: 100vh;
-    color: var(--text-primary);
-    line-height: 1.6;
-}
-
-.app-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 16px;
-}
-
-/* Header */
-.header {
-    background: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
-    border-radius: 20px;
-    padding: 24px 20px;
-    margin-bottom: 20px;
-    box-shadow: var(--shadow);
-    position: relative;
-    overflow: hidden;
-}
-
-.header::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 200px;
-    height: 200px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 50%;
-}
-
-.header h1 {
-    font-size: 24px;
-    font-weight: 700;
-    margin: 0;
-    position: relative;
-    z-index: 1;
-}
-
-.header .subtitle {
-    font-size: 12px;
-    opacity: 0.8;
-    margin-top: 4px;
-    position: relative;
-    z-index: 1;
-}
-
-/* Email Creator */
-.email-creator {
-    background: var(--bg-secondary);
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 20px;
-    border: 1px solid var(--border);
-}
-
-.input-group {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-
-.input-group input {
-    flex: 1;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    color: var(--text-primary);
-    padding: 12px 16px;
-    border-radius: 12px;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s;
-}
-
-.input-group input:focus {
-    border-color: var(--accent);
-}
-
-.input-group select {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    color: var(--text-primary);
-    padding: 12px 16px;
-    border-radius: 12px;
-    font-size: 14px;
-    outline: none;
-    min-width: 140px;
-    cursor: pointer;
-}
-
-.btn {
-    background: var(--accent);
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    width: 100%;
-    justify-content: center;
-}
-
-.btn:hover {
-    background: var(--accent-hover);
-}
-
-.btn:active {
-    transform: scale(0.98);
-}
-
-/* Current Email */
-.current-email {
-    background: var(--bg-secondary);
-    border-radius: 16px;
-    padding: 16px 20px;
-    margin-bottom: 20px;
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.email-display {
-    flex: 1;
-    min-width: 0;
-}
-
-.email-label {
-    font-size: 11px;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 4px;
-}
-
-.email-address {
-    font-size: 16px;
-    font-weight: 600;
-    word-break: break-all;
-    color: var(--accent);
-}
-
-.email-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.btn-icon {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    color: var(--text-primary);
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 18px;
-    position: relative;
-}
-
-.btn-icon:hover {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: white;
-}
-
-.btn-icon.danger:hover {
-    background: var(--danger);
-    border-color: var(--danger);
-}
-
-.btn-icon.refreshing {
-    animation: rotate360 1s linear infinite;
-}
-
-@keyframes rotate360 {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-.btn-icon.copy-success {
-    background: var(--success);
-    border-color: var(--success);
-    color: white;
-}
-
-/* Badge for new messages */
-.badge {
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    background: var(--danger);
-    color: white;
-    border-radius: 10px;
-    padding: 2px 6px;
-    font-size: 10px;
-    font-weight: 700;
-    min-width: 18px;
-    text-align: center;
-}
-
-/* Inbox */
-.inbox-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-}
-
-.inbox-header h3 {
-    font-size: 18px;
-    font-weight: 600;
-}
-
-.message-count {
-    background: var(--accent);
-    color: white;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.message-count.has-new {
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-}
-
-.refresh-indicator {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: var(--text-secondary);
-}
-
-.spinner {
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--border);
-    border-top: 2px solid var(--accent);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Messages */
-.messages-container {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.message-card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 16px;
-    transition: all 0.2s;
-    animation: slideIn 0.3s ease-out;
-}
-
-.message-card.new-message {
-    border-left: 3px solid var(--accent);
-    animation: newMessageGlow 2s ease-out;
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>TempMail44 • Telegram</title>
+  <!-- Telegram Web App script -->
+  <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+  <style>
+    :root {
+      --bg-primary: #0a0e27;
+      --bg-secondary: #131837;
+      --bg-card: #1a1f3a;
+      --accent: #4f46e5;
+      --accent-hover: #6366f1;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --success: #10b981;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --border: #2d3454;
+      --shadow: 0 8px 20px rgba(0,0,0,0.4);
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background: var(--bg-primary);
+      min-height: 100vh;
+      color: var(--text-primary);
+      line-height: 1.5;
+      padding: 12px;
     }
-}
-
-@keyframes newMessageGlow {
-    0% { box-shadow: 0 0 20px rgba(79, 70, 229, 0.3); }
-    100% { box-shadow: 0 0 0px rgba(79, 70, 229, 0); }
-}
-
-.message-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-.message-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 12px;
-}
-
-.message-subject {
-    font-weight: 600;
-    font-size: 15px;
-    color: var(--text-primary);
-    flex: 1;
-    margin-right: 12px;
-    line-height: 1.4;
-}
-
-.new-indicator {
-    background: var(--accent);
-    color: white;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    animation: pulse 1.5s infinite;
-}
-
-.message-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-bottom: 12px;
-}
-
-.meta-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    color: var(--text-secondary);
-}
-
-.meta-icon {
-    font-size: 14px;
-    width: 20px;
-    text-align: center;
-}
-
-.message-actions {
-    display: flex;
-    gap: 8px;
-    padding-top: 12px;
-    border-top: 1px solid var(--border);
-}
-
-.btn-sm {
-    padding: 8px 16px;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: none;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.btn-primary {
-    background: var(--accent);
-    color: white;
-}
-
-.btn-primary:hover {
-    background: var(--accent-hover);
-}
-
-.btn-danger {
-    background: transparent;
-    color: var(--danger);
-    border: 1px solid var(--danger);
-}
-
-.btn-danger:hover {
-    background: var(--danger);
-    color: white;
-}
-
-.empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--text-secondary);
-}
-
-.empty-state .icon {
-    font-size: 48px;
-    margin-bottom: 16px;
-}
-
-.empty-state p {
-    font-size: 14px;
-}
-
-/* Toast */
-.toast {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--success);
-    color: white;
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 500;
-    z-index: 1000;
-    animation: toastIn 0.3s ease-out, toastOut 0.3s ease-in 1.7s forwards;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-@keyframes toastIn {
-    from {
-        opacity: 0;
-        transform: translateX(-50%) translateY(-20px);
+    .app-container {
+      max-width: 580px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
     }
-    to {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      border-radius: var(--radius-lg);
+      padding: 22px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow);
     }
-}
-
-@keyframes toastOut {
-    from {
-        opacity: 1;
+    .header h1 {
+      font-size: 1.7rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
     }
-    to {
-        opacity: 0;
+    .header .subtitle {
+      font-size: 0.75rem;
+      opacity: 0.8;
     }
-}
-
-/* Last refresh time */
-.last-refresh {
-    font-size: 11px;
-    color: var(--text-secondary);
-    text-align: center;
-    margin-top: 16px;
-}
-
-/* Responsive */
-@media (max-width: 400px) {
+    /* Creator */
+    .email-creator {
+      background: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      border: 1px solid var(--border);
+    }
     .input-group {
-        flex-direction: column;
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
     }
-    
+    .input-group input {
+      flex: 2;
+      min-width: 150px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      outline: none;
+    }
+    .input-group input:focus { border-color: var(--accent); }
+    .input-group select {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      outline: none;
+      cursor: pointer;
+    }
+    .btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 13px 20px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn:active { transform: scale(0.97); background: var(--accent-hover); }
+    /* Current Email Card */
+    .current-email {
+      background: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .email-display {
+      flex: 1;
+      min-width: 0;
+    }
+    .email-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+    .email-address {
+      font-weight: 700;
+      font-size: 1.1rem;
+      word-break: break-all;
+      color: var(--accent);
+    }
+    .email-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .btn-icon {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.2s;
+      position: relative;
+      background: var(--bg-card);
+    }
+    .btn-icon:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+    .btn-icon.danger:hover {
+      background: var(--danger);
+      border-color: var(--danger);
+    }
+    .badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: var(--danger);
+      color: white;
+      border-radius: 12px;
+      padding: 2px 7px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      min-width: 18px;
+      text-align: center;
+    }
+    /* Inbox header */
+    .inbox-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .inbox-header h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .message-count {
+      background: var(--accent);
+      padding: 4px 13px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .refresh-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border);
+      border-top: 2px solid var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    /* Messages */
+    .messages-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .message-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 15px;
+      transition: 0.2s;
+      animation: fadeSlide 0.25s ease;
+    }
+    .message-card.new-message {
+      border-left: 4px solid var(--accent);
+    }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .message-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+    .message-subject {
+      font-weight: 600;
+      font-size: 1rem;
+      word-break: break-word;
+      padding-right: 8px;
+    }
+    .new-indicator {
+      background: var(--accent);
+      color: white;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .message-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
     .message-actions {
-        flex-direction: column;
+      display: flex;
+      gap: 8px;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      flex-wrap: wrap;
     }
-    
     .btn-sm {
-        width: 100%;
-        justify-content: center;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: 0.2s;
     }
-}
-</style>
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-danger {
+      background: transparent;
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+    .btn-danger:hover {
+      background: var(--danger);
+      color: white;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 35px 15px;
+      color: var(--text-secondary);
+    }
+    .last-refresh {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--success);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-weight: 500;
+      z-index: 999;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      animation: toastAnim 2s ease forwards;
+    }
+    @keyframes toastAnim {
+      0% { opacity: 0; top: 30px; }
+      15% { opacity: 1; top: 20px; }
+      85% { opacity: 1; top: 20px; }
+      100% { opacity: 0; top: 10px; }
+    }
+  </style>
 </head>
-
 <body>
-
 <div class="app-container">
-    <!-- Header -->
-    <div class="header">
-        <h1>📧 TempMail44</h1>
-        <div class="subtitle">Temporary Email Service</div>
+  <div class="header">
+    <div>
+      <h1>📧 TempMail44</h1>
+      <div class="subtitle">Telegram instant inbox</div>
     </div>
+  </div>
 
-    <!-- Email Creator -->
-    <div class="email-creator">
-        <div class="input-group">
-            <input type="text" id="emailName" placeholder="Username (optional)" maxlength="20">
-            <select id="domainSelect"></select>
-        </div>
-        <button class="btn" onclick="createEmail()">
-            <span>📨</span> Create Email Address
-        </button>
+  <!-- Email creator -->
+  <div class="email-creator">
+    <div class="input-group">
+      <input type="text" id="emailName" placeholder="Your username (optional)" maxlength="24">
+      <select id="domainSelect"></select>
     </div>
+    <button class="btn" id="createBtn" onclick="createEmail()">
+      <span>📨</span> Create temporary email
+    </button>
+  </div>
 
-    <!-- Current Email -->
-    <div class="current-email" id="currentEmailBox" style="display: none;">
-        <div class="email-display">
-            <div class="email-label">Your Temporary Email</div>
-            <div class="email-address" id="currentEmail"></div>
-        </div>
-        <div class="email-actions">
-            <button class="btn-icon" onclick="copyEmail()" title="Copy email" id="copyBtn">📋</button>
-            <button class="btn-icon" onclick="refreshInbox()" title="Refresh inbox" id="refreshBtn">🔄</button>
-            <button class="btn-icon danger" onclick="deleteEmail()" title="Delete email">🗑️</button>
-        </div>
+  <!-- Current email box -->
+  <div class="current-email" id="currentEmailBox" style="display: none;">
+    <div class="email-display">
+      <div class="email-label">Your active email</div>
+      <div class="email-address" id="currentEmailText"></div>
     </div>
-
-    <!-- Inbox -->
-    <div class="inbox-header">
-        <h3>📥 Inbox</h3>
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <div class="refresh-indicator" id="refreshStatus" style="display: none;">
-                <div class="spinner"></div>
-                Checking...
-            </div>
-            <span class="message-count" id="messageCount">0</span>
-        </div>
+    <div class="email-actions">
+      <button class="btn-icon" id="copyBtn" onclick="copyEmail()" title="Copy email">📋</button>
+      <button class="btn-icon" id="refreshBtn" onclick="refreshInbox()" title="Refresh now">🔄</button>
+      <button class="btn-icon danger" id="deleteEmailBtn" onclick="deleteEmailAccount()" title="Delete email">🗑️</button>
     </div>
+  </div>
 
-    <div class="messages-container" id="messagesList">
-        <div class="empty-state">
-            <div class="icon">📭</div>
-            <p>No emails yet. Create an email address to get started!</p>
-        </div>
+  <!-- Inbox -->
+  <div class="inbox-header">
+    <h3>📥 Inbox</h3>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div class="refresh-indicator" id="refreshStatus" style="display: none;">
+        <div class="spinner"></div> syncing
+      </div>
+      <span class="message-count" id="messageCount">0</span>
     </div>
+  </div>
 
-    <div class="last-refresh" id="lastRefresh"></div>
+  <div class="messages-container" id="messagesList">
+    <div class="empty-state">📭<br>No emails yet</div>
+  </div>
+  <div class="last-refresh" id="lastRefresh"></div>
 </div>
 
 <script>
-const API_BASE = 'https://tempmail44.com/api';
-const API_KEY = 'pTTUF8gTt48p6YcG5PzwiTtQZhQWKVE';
+  (function() {
+    const API_BASE = 'https://tempmail44.com/api';
+    const API_KEY = 'pTTUF8gTt48p6YcG5PzwiTtQZhQWKVE';
+    
+    let currentEmail = localStorage.getItem('tempEmail') || null;
+    let pollTimer = null;
+    let isPolling = false;
+    let knownMessageIds = new Set();
 
-let currentEmail = localStorage.getItem('tempEmail');
-let pollInterval = null;
-let isPolling = false;
-let messageCache = new Map();
-let knownMessageIds = new Set(); // Track known messages to detect new ones
-
-/* TOAST NOTIFICATION */
-function showToast(message, type = 'success') {
-    const existing = document.querySelector('.toast');
-    if (existing) existing.remove();
-
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    if (type === 'error') {
-        toast.style.background = '#ef4444';
+    // Toast
+    function showToast(msg, isError = false) {
+      const old = document.querySelector('.toast');
+      if (old) old.remove();
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.style.background = isError ? '#ef4444' : '#10b981';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2100);
     }
-    toast.textContent = message;
-    document.body.appendChild(toast);
 
-    setTimeout(() => toast.remove(), 2000);
-}
+    // Escape HTML
+    function escapeStr(text) {
+      return String(text).replace(/[&<>"]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        if (m === '"') return '&quot;';
+        return m;
+      });
+    }
 
-/* LOAD DOMAINS */
-async function loadDomains() {
-    try {
+    // Load domains
+    async function loadDomains() {
+      try {
         const res = await fetch(`${API_BASE}/domains/${API_KEY}/all`);
         const data = await res.json();
-
         const select = document.getElementById('domainSelect');
         select.innerHTML = '';
-
-        if (data.data && data.data.domains) {
-            data.data.domains.forEach(d => {
-                const opt = document.createElement('option');
-                opt.value = d.domain;
-                opt.textContent = d.domain;
-                select.appendChild(opt);
-            });
+        if (data?.data?.domains) {
+          data.data.domains.forEach(d => {
+            const opt = document.createElement('option');
+            opt.value = d.domain;
+            opt.textContent = d.domain;
+            select.appendChild(opt);
+          });
         }
-    } catch (err) {
-        console.error('Failed to load domains:', err);
+      } catch (e) {
+        console.warn('Domain load failed');
+      }
     }
-}
 
-/* CREATE EMAIL */
-async function createEmail() {
-    const btn = document.querySelector('.btn');
-    btn.innerHTML = '<div class="spinner"></div> Creating...';
-    btn.disabled = true;
-
-    try {
-        const res = await fetch(`${API_BASE}/emails/${API_KEY}`, {
-            method: 'POST'
-        });
-
-        const data = await res.json();
-        let email = data.data.email;
-
-        const username = document.getElementById('emailName').value.trim();
-        const domain = document.getElementById('domainSelect').value;
-
-        if (username) {
-            const update = await fetch(
-                `${API_BASE}/emails/${API_KEY}/${email}/${username}/${domain}`,
-                { method: 'POST' }
-            );
-            const u = await update.json();
-            if (u.data && u.data.email) {
-                email = u.data.email;
-            }
-        }
-
-        currentEmail = email;
-        localStorage.setItem('tempEmail', email);
-
-        document.getElementById('currentEmail').textContent = email;
-        document.getElementById('currentEmailBox').style.display = 'flex';
-        document.getElementById('emailName').value = '';
-        
-        // Reset tracking
-        messageCache.clear();
-        knownMessageIds.clear();
-        
-        startPolling();
-        showToast('Email created successfully! 📨');
-
-    } catch (err) {
-        console.error('Failed to create email:', err);
-        showToast('Failed to create email. Please try again.', 'error');
-    } finally {
-        btn.innerHTML = '<span>📨</span> Create Email Address';
-        btn.disabled = false;
+    // Update UI with current email
+    function showCurrentEmailBox(email) {
+      document.getElementById('currentEmailText').textContent = email;
+      document.getElementById('currentEmailBox').style.display = 'flex';
     }
-}
 
-/* COPY EMAIL */
-async function copyEmail() {
-    if (!currentEmail) return;
+    function hideCurrentEmailBox() {
+      document.getElementById('currentEmailBox').style.display = 'none';
+      document.getElementById('currentEmailText').textContent = '';
+    }
 
-    try {
+    // Copy to clipboard
+    window.copyEmail = async function() {
+      if (!currentEmail) return;
+      try {
         await navigator.clipboard.writeText(currentEmail);
         const btn = document.getElementById('copyBtn');
-        btn.classList.add('copy-success');
         btn.textContent = '✅';
-        showToast('Email copied to clipboard!');
-
-        setTimeout(() => {
-            btn.classList.remove('copy-success');
-            btn.textContent = '📋';
-        }, 2000);
-    } catch (err) {
-        // Fallback
+        showToast('Email copied!');
+        setTimeout(() => { btn.textContent = '📋'; }, 1800);
+      } catch (err) {
         const input = document.createElement('input');
         input.value = currentEmail;
         document.body.appendChild(input);
         input.select();
         document.execCommand('copy');
         document.body.removeChild(input);
-        showToast('Email copied!');
-    }
-}
+        showToast('Copied (fallback)');
+      }
+    };
 
-/* REFRESH INBOX - CRITICAL FIX */
-async function refreshInbox() {
-    const refreshBtn = document.getElementById('refreshBtn');
-    const statusEl = document.getElementById('refreshStatus');
-    
-    // Visual feedback
-    refreshBtn.classList.add('refreshing');
-    statusEl.style.display = 'inline-flex';
-    
-    // Force clear cache to ensure fresh data
-    messageCache.clear();
-    knownMessageIds.clear();
-    
-    await checkMessages(true);
-    
-    // Update last refresh time
-    updateLastRefreshTime();
-    
-    // Remove visual feedback
-    refreshBtn.classList.remove('refreshing');
-    statusEl.style.display = 'none';
-    showToast('Inbox refreshed! 🔄');
-}
+    // Refresh inbox manually
+    window.refreshInbox = async function() {
+      if (!currentEmail) return;
+      const refreshBtn = document.getElementById('refreshBtn');
+      const statusEl = document.getElementById('refreshStatus');
+      refreshBtn.style.transform = 'rotate(0deg)';
+      refreshBtn.style.transition = '0.3s';
+      refreshBtn.style.transform = 'rotate(360deg)';
+      statusEl.style.display = 'flex';
+      
+      knownMessageIds.clear();
+      await checkMessages(true);
+      
+      setTimeout(() => {
+        refreshBtn.style.transform = 'rotate(0deg)';
+        statusEl.style.display = 'none';
+      }, 500);
+      updateLastRefreshTime();
+    };
 
-function updateLastRefreshTime() {
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString();
-    document.getElementById('lastRefresh').textContent = `Last refreshed: ${timeStr}`;
-}
-
-/* DELETE EMAIL */
-async function deleteEmail() {
-    if (!currentEmail) return;
-
-    if (!confirm('Are you sure you want to delete this email address? All messages will be lost.')) {
-        return;
+    function updateLastRefreshTime() {
+      const now = new Date();
+      document.getElementById('lastRefresh').textContent = `Last check: ${now.toLocaleTimeString()}`;
     }
 
-    try {
-        // Stop polling
-        if (pollInterval) {
-            clearInterval(pollInterval);
-            pollInterval = null;
-        }
-
-        // Delete from server
-        await fetch(`${API_BASE}/emails/${API_KEY}/${currentEmail}`, {
-            method: 'DELETE'
-        });
-
-        // Clear local state
+    // Delete email account
+    window.deleteEmailAccount = async function() {
+      if (!currentEmail) return;
+      if (!confirm('Delete this temporary email? All messages will be lost.')) return;
+      try {
+        if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+        await fetch(`${API_BASE}/emails/${API_KEY}/${currentEmail}`, { method: 'DELETE' });
         currentEmail = null;
         localStorage.removeItem('tempEmail');
-        messageCache.clear();
         knownMessageIds.clear();
-
-        document.getElementById('currentEmailBox').style.display = 'none';
-        document.getElementById('currentEmail').textContent = '';
-        document.getElementById('messagesList').innerHTML = `
-            <div class="empty-state">
-                <div class="icon">📭</div>
-                <p>Email deleted. Create a new one to get started!</p>
-            </div>
-        `;
+        hideCurrentEmailBox();
+        document.getElementById('messagesList').innerHTML = '<div class="empty-state">📭 Email deleted</div>';
         document.getElementById('messageCount').textContent = '0';
-        document.getElementById('messageCount').classList.remove('has-new');
         document.getElementById('lastRefresh').textContent = '';
+        showToast('Email deleted');
+      } catch (e) {
+        showToast('Delete failed', true);
+      }
+    };
 
-        showToast('Email deleted successfully! 🗑️');
-
-    } catch (err) {
-        console.error('Failed to delete email:', err);
-        showToast('Failed to delete email. Please try again.', 'error');
-    }
-}
-
-/* START POLLING - CRITICAL FIX */
-function startPolling() {
-    if (pollInterval) {
-        clearInterval(pollInterval);
-    }
-
-    // Immediate first check
-    checkMessages();
-    updateLastRefreshTime();
-
-    // Poll every 8 seconds - CRITICAL: This is what keeps checking for new messages
-    pollInterval = setInterval(() => {
-        if (currentEmail && !isPolling) {
-            checkMessages();
-            updateLastRefreshTime();
+    // Create email
+    window.createEmail = async function() {
+      const btn = document.getElementById('createBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner"></div> Creating...';
+      try {
+        const res = await fetch(`${API_BASE}/emails/${API_KEY}`, { method: 'POST' });
+        const data = await res.json();
+        let email = data.data.email;
+        const username = document.getElementById('emailName').value.trim();
+        const domain = document.getElementById('domainSelect').value;
+        if (username) {
+          const updateRes = await fetch(`${API_BASE}/emails/${API_KEY}/${email}/${username}/${domain}`, { method: 'POST' });
+          const updateData = await updateRes.json();
+          if (updateData.data?.email) email = updateData.data.email;
         }
-    }, 8000);
-}
+        currentEmail = email;
+        localStorage.setItem('tempEmail', email);
+        showCurrentEmailBox(email);
+        document.getElementById('emailName').value = '';
+        knownMessageIds.clear();
+        startPolling();
+        showToast('Email ready!');
+      } catch (e) {
+        showToast('Creation failed', true);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>📨</span> Create temporary email';
+      }
+    };
 
-/* CHECK MESSAGES - CRITICAL FIX */
-async function checkMessages(forceUpdate = false) {
-    if (!currentEmail || isPolling) return;
-    isPolling = true;
-
-    try {
-        console.log("📡 Fetching messages for:", currentEmail);
-
-        // Primary API call
-        const res = await fetch(
-            `${API_BASE}/messages/${API_KEY}/${encodeURIComponent(currentEmail)}`,
-            {
-                cache: 'no-store', // Critical: Don't cache API responses
-                headers: {
-                    'Cache-Control': 'no-cache',
-                    'Pragma': 'no-cache'
-                }
-            }
-        );
-
-        if (res.ok) {
-            const data = await res.json();
-            console.log("📨 API Response:", data);
-
-            if (data.status && data.messages) {
-                processNewMessages(data.messages, forceUpdate);
-                return;
-            }
-        }
-
-        // Fallback method if API fails
-        console.log("⚠️ API failed or no messages, trying fallback...");
-        await fallbackFetch(forceUpdate);
-
-    } catch (e) {
-        console.warn("⚠️ Primary API error:", e.message);
-        await fallbackFetch(forceUpdate);
+    // Fetch messages
+    async function fetchMessages() {
+      const url = `${API_BASE}/messages/${API_KEY}/${encodeURIComponent(currentEmail)}`;
+      const res = await fetch(url, { cache: 'no-store', headers: {'Cache-Control': 'no-cache'} });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.status && Array.isArray(data.messages)) return data.messages;
+      }
+      // fallback
+      const formData = new FormData();
+      formData.append('email', currentEmail);
+      const fallbackRes = await fetch('https://tempmail44.com/get_messages', {
+        method: 'POST', body: formData, cache: 'no-store'
+      });
+      const fallbackData = await fallbackRes.json();
+      return fallbackData.messages || fallbackData.data?.messages || [];
     }
 
-    isPolling = false;
-}
-
-/* FALLBACK FETCH */
-async function fallbackFetch(forceUpdate) {
-    try {
-        const formData = new FormData();
-        formData.append('email', currentEmail);
-
-        const fallback = await fetch('https://tempmail44.com/get_messages', {
-            method: 'POST',
-            body: formData,
-            cache: 'no-store',
-            headers: {
-                'Cache-Control': 'no-cache',
-                'Pragma': 'no-cache'
-            }
+    async function checkMessages(forceRender = false) {
+      if (!currentEmail || isPolling) return;
+      isPolling = true;
+      try {
+        const messages = await fetchMessages();
+        document.getElementById('messageCount').textContent = messages.length;
+        let newDetected = false;
+        const currentIds = new Set();
+        messages.forEach(m => {
+          const id = m.hash || m.id || JSON.stringify(m);
+          currentIds.add(id);
+          if (!knownMessageIds.has(id)) newDetected = true;
         });
-
-        const data = await fallback.json();
-        console.log("📨 Fallback Response:", data);
-
-        const messages = data.messages || data.data?.messages || [];
-        processNewMessages(messages, forceUpdate);
-
-    } catch (err) {
-        console.error("❌ All fetch methods failed:", err);
-        document.getElementById('messageCount').textContent = '?';
-    }
-}
-
-/* PROCESS NEW MESSAGES - CRITICAL FIX */
-function processNewMessages(messages, forceUpdate) {
-    if (!Array.isArray(messages)) {
-        messages = [];
-    }
-
-    console.log(`📊 Processing ${messages.length} messages`);
-    document.getElementById('messageCount').textContent = messages.length;
-
-    // Check for new messages
-    let hasNewMessages = false;
-    const currentMessageIds = new Set();
-
-    messages.forEach(msg => {
-        const msgId = msg.hash || msg.id || JSON.stringify(msg);
-        currentMessageIds.add(msgId);
-
-        if (!knownMessageIds.has(msgId)) {
-            hasNewMessages = true;
-            console.log('🆕 New message detected:', msg.subject);
+        knownMessageIds = currentIds;
+        if (newDetected || forceRender) {
+          renderMessages(messages, newDetected);
+          if (newDetected) {
+            showToast('📬 New message arrived!');
+          }
         }
-    });
-
-    // Update known messages
-    knownMessageIds = currentMessageIds;
-
-    // Update UI with new message indicator
-    if (hasNewMessages && !forceUpdate) {
-        document.getElementById('messageCount').classList.add('has-new');
-        showToast('New message received! 📨');
-    }
-
-    // Always render if forced update or new messages
-    if (forceUpdate || hasNewMessages) {
-        renderMessages(messages, hasNewMessages && !forceUpdate);
-        // Clear the new badge after 3 seconds
-        if (hasNewMessages) {
-            setTimeout(() => {
-                document.getElementById('messageCount').classList.remove('has-new');
-            }, 3000);
+        if (messages.length === 0) {
+          document.getElementById('messagesList').innerHTML = '<div class="empty-state">📭 Inbox empty</div>';
         }
+      } catch (err) {
+        console.error('checkMessages error', err);
+      } finally {
+        isPolling = false;
+      }
     }
-}
 
-/* RENDER MESSAGES - CRITICAL FIX */
-function renderMessages(messages, hasNew = false) {
-    const box = document.getElementById('messagesList');
-
-    if (!messages || messages.length === 0) {
-        box.innerHTML = `
-            <div class="empty-state">
-                <div class="icon">📭</div>
-                <p>No messages yet. Waiting for incoming emails...</p>
-            </div>
-        `;
+    function renderMessages(messages, highlightNew = false) {
+      const container = document.getElementById('messagesList');
+      if (!messages.length) {
+        container.innerHTML = '<div class="empty-state">📭 No messages</div>';
         return;
-    }
-
-    // Clear and rebuild
-    box.innerHTML = '';
-
-    messages.forEach((m, index) => {
+      }
+      container.innerHTML = '';
+      messages.forEach((m, idx) => {
+        const id = m.hash || m.id || '';
+        const isNewCard = highlightNew && !knownMessageIds.has(id) ? true : false;
         const card = document.createElement('div');
-        card.className = 'message-card';
-        
-        // Check if this is a new message
-        const msgId = m.hash || m.id || '';
-        const isNew = hasNew && !messageCache.has(msgId);
-        
-        if (isNew) {
-            card.classList.add('new-message');
-            messageCache.set(msgId, true);
-        }
-
-        card.style.animationDelay = `${index * 0.05}s`;
-
-        const subject = m.subject || 'No Subject';
-        const from = m.from_email || 'Unknown';
-        const fromName = m.from || '';
-        const hash = m.hash || m.id || '';
+        card.className = 'message-card' + (isNewCard ? ' new-message' : '');
+        card.style.animationDelay = `${idx * 0.03}s`;
+        const subject = escapeStr(m.subject || 'No subject');
+        const from = escapeStr(m.from || m.from_email || 'Unknown');
         const time = m.time || m.created_at || '';
         const dateStr = time ? new Date(time).toLocaleString() : '';
-
         card.innerHTML = `
-            <div class="message-header">
-                <div class="message-subject">${escapeHtml(subject)}</div>
-                ${isNew ? '<span class="new-indicator">NEW</span>' : ''}
-            </div>
-            <div class="message-meta">
-                <div class="meta-item">
-                    <span class="meta-icon">👤</span>
-                    <span>${escapeHtml(fromName || from)}</span>
-                </div>
-                ${dateStr ? `
-                <div class="meta-item">
-                    <span class="meta-icon">🕐</span>
-                    <span>${dateStr}</span>
-                </div>
-                ` : ''}
-            </div>
-            <div class="message-actions">
-                <button class="btn-sm btn-primary" onclick="openMessage('${hash}')">
-                    📖 View
-                </button>
-                <button class="btn-sm btn-danger" onclick="deleteMessage('${hash}')">
-                    🗑️ Delete
-                </button>
-            </div>
+          <div class="message-header">
+            <span class="message-subject">${subject}</span>
+            ${isNewCard ? '<span class="new-indicator">NEW</span>' : ''}
+          </div>
+          <div class="message-meta">
+            <span>👤 ${from}</span>
+            ${dateStr ? `<span>🕒 ${dateStr}</span>` : ''}
+          </div>
+          <div class="message-actions">
+            <button class="btn-sm btn-primary" data-hash="${escapeStr(id)}">📖 View</button>
+            <button class="btn-sm btn-danger" data-hash="${escapeStr(id)}">🗑️ Delete</button>
+          </div>
         `;
+        container.appendChild(card);
+      });
+      // Attach events
+      document.querySelectorAll('.btn-primary[data-hash]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const hash = e.currentTarget.getAttribute('data-hash');
+          if (hash) window.open(`https://tempmail44.com/view/${hash}`, '_blank');
+        });
+      });
+      document.querySelectorAll('.btn-danger[data-hash]').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const hash = e.currentTarget.getAttribute('data-hash');
+          if (!hash || !currentEmail) return;
+          if (!confirm('Delete this message?')) return;
+          try {
+            await fetch(`${API_BASE}/messages/${API_KEY}/${hash}`, { method: 'DELETE' });
+            knownMessageIds.delete(hash);
+            showToast('Message deleted');
+            await checkMessages(true);
+          } catch (err) {
+            showToast('Delete failed', true);
+          }
+        });
+      });
+    }
 
-        box.appendChild(card);
+    function startPolling() {
+      if (pollTimer) clearInterval(pollTimer);
+      checkMessages(true);
+      updateLastRefreshTime();
+      pollTimer = setInterval(() => {
+        if (currentEmail && !isPolling) {
+          checkMessages();
+          updateLastRefreshTime();
+        }
+      }, 8000);
+    }
+
+    // Visibility / focus handlers for background refresh
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && currentEmail) {
+        checkMessages(true);
+        if (!pollTimer) startPolling();
+      } else if (document.hidden && pollTimer) {
+        clearInterval(pollTimer);
+        pollTimer = null;
+      }
+    });
+    window.addEventListener('focus', () => {
+      if (currentEmail && !pollTimer) startPolling();
     });
 
-    console.log(`✅ Rendered ${messages.length} messages`);
-}
-
-/* OPEN MESSAGE */
-function openMessage(hash) {
-    if (hash) {
-        window.open(`https://tempmail44.com/view/${hash}`, '_blank');
+    // Init Telegram Web App
+    if (window.Telegram?.WebApp) {
+      window.Telegram.WebApp.ready();
+      window.Telegram.WebApp.expand();
     }
-}
 
-/* DELETE MESSAGE */
-async function deleteMessage(hash) {
-    if (!hash || !currentEmail) return;
-
-    if (!confirm('Delete this message?')) return;
-
-    try {
-        const res = await fetch(`${API_BASE}/messages/${API_KEY}/${hash}`, {
-            method: 'DELETE'
-        });
-
-        if (res.ok) {
-            showToast('Message deleted! 🗑️');
-            // Remove from known messages
-            knownMessageIds.delete(hash);
-            messageCache.delete(hash);
-            // Force refresh
-            setTimeout(() => refreshInbox(), 300);
-        } else {
-            throw new Error('Delete failed');
-        }
-    } catch (err) {
-        console.error('Failed to delete message:', err);
-        showToast('Failed to delete message.', 'error');
-    }
-}
-
-/* ESCAPE HTML */
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-/* INIT */
-window.onload = () => {
+    // Startup
     loadDomains();
-
-    // Initialize Telegram Web App if available
-    if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.ready();
-        window.Telegram.WebApp.expand();
-    }
-
     if (currentEmail) {
-        document.getElementById('currentEmail').textContent = currentEmail;
-        document.getElementById('currentEmailBox').style.display = 'flex';
-        startPolling();
-    }
-};
-
-// Handle page visibility - CRITICAL for Telegram mini-app
-document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-        // Page hidden - stop polling to save resources
-        if (pollInterval) {
-            clearInterval(pollInterval);
-            pollInterval = null;
-            console.log('⏸️ Polling paused (page hidden)');
-        }
+      showCurrentEmailBox(currentEmail);
+      startPolling();
     } else {
-        // Page visible again - resume polling
-        if (currentEmail) {
-            console.log('▶️ Resuming polling');
-            // Force immediate refresh when becoming visible
-            checkMessages(true);
-            startPolling();
-        }
+      hideCurrentEmailBox();
     }
-});
-
-// Also listen for focus/blur as backup
-window.addEventListener('focus', () => {
-    if (currentEmail && !pollInterval) {
-        console.log('🔄 Window focused - refreshing');
-        checkMessages(true);
-        startPolling();
-    }
-});
-
-console.log('🚀 TempMail44 Mini-App initialized');
+    console.log('📧 TempMail44 ready (Telegram native)');
+  })();
 </script>
-
 </body>
 </html>
