@@ -44,13 +44,10 @@
       background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
       border-radius: var(--radius-lg);
       padding: 22px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       box-shadow: var(--shadow);
     }
     .header h1 { font-size: 1.7rem; font-weight: 700; }
-    .header .subtitle { font-size: 0.75rem; opacity: 0.8; }
+    .header .subtitle { font-size: 0.75rem; opacity: 0.8; margin-top: 2px; }
     .email-creator {
       background: var(--bg-secondary);
       border-radius: var(--radius-lg);
@@ -174,55 +171,65 @@
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .messages-container { display: flex; flex-direction: column; gap: 12px; }
+    .messages-container { display: flex; flex-direction: column; gap: 10px; }
     .message-card {
       background: var(--bg-secondary);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
-      padding: 15px;
+      padding: 14px;
       transition: 0.2s;
-      animation: fadeSlide 0.25s ease;
+      animation: fadeSlide 0.2s ease;
+      cursor: pointer;
     }
+    .message-card:active { transform: scale(0.98); }
     .message-card.new-message { border-left: 4px solid var(--accent); }
     @keyframes fadeSlide {
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .message-header {
+    .message-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
-    .message-subject { font-weight: 600; font-size: 1rem; word-break: break-word; padding-right: 8px; }
+    .message-subject {
+      font-weight: 600;
+      font-size: 0.95rem;
+      word-break: break-word;
+      flex: 1;
+      padding-right: 8px;
+    }
+    .message-date {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      margin-left: 8px;
+    }
     .new-indicator {
       background: var(--accent);
       color: white;
-      padding: 2px 10px;
+      padding: 2px 8px;
       border-radius: 12px;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       font-weight: 700;
       text-transform: uppercase;
     }
-    .message-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 12px;
+    .message-from {
       font-size: 0.8rem;
       color: var(--text-secondary);
+      margin-bottom: 10px;
     }
     .message-actions {
       display: flex;
       gap: 8px;
       border-top: 1px solid var(--border);
-      padding-top: 12px;
-      flex-wrap: wrap;
+      padding-top: 10px;
     }
     .btn-sm {
-      padding: 8px 16px;
+      padding: 7px 14px;
       border-radius: 20px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
       border: none;
       cursor: pointer;
@@ -250,6 +257,7 @@
       z-index: 999;
       box-shadow: 0 8px 20px rgba(0,0,0,0.5);
       animation: toastAnim 2s ease forwards;
+      pointer-events: none;
     }
     @keyframes toastAnim {
       0% { opacity: 0; top: 30px; }
@@ -258,7 +266,7 @@
       100% { opacity: 0; top: 10px; }
     }
 
-    /* Message Viewer Modal */
+    /* Modal - Instant open */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -272,7 +280,7 @@
       align-items: center;
       justify-content: center;
       padding: 16px;
-      animation: fadeIn 0.2s ease;
+      animation: fadeIn 0.15s ease;
     }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     .modal-content {
@@ -285,26 +293,31 @@
       display: flex;
       flex-direction: column;
       box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-      animation: slideUp 0.25s ease;
+      animation: slideUp 0.2s ease;
     }
     @keyframes slideUp {
       from { transform: translateY(20px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
     .modal-header {
-      padding: 18px 20px;
+      padding: 16px 18px;
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 12px;
+      gap: 10px;
     }
-    .modal-header h3 { font-size: 1.1rem; font-weight: 600; word-break: break-word; flex: 1; }
+    .modal-header h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      word-break: break-word;
+      flex: 1;
+    }
     .modal-close {
       background: none;
       border: none;
       color: var(--text-secondary);
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       cursor: pointer;
       padding: 4px 8px;
       border-radius: 8px;
@@ -312,30 +325,23 @@
     }
     .modal-close:hover { background: var(--bg-card); color: white; }
     .modal-meta {
-      padding: 12px 20px;
+      padding: 10px 18px;
       display: flex;
       flex-wrap: wrap;
-      gap: 16px;
-      font-size: 0.85rem;
+      gap: 14px;
+      font-size: 0.8rem;
       color: var(--text-secondary);
       border-bottom: 1px solid var(--border);
     }
     .modal-body {
-      padding: 20px;
+      padding: 18px;
       overflow-y: auto;
       flex: 1;
       word-break: break-word;
       line-height: 1.7;
       max-height: 50vh;
+      font-size: 0.9rem;
     }
-    .modal-body iframe {
-      width: 100%;
-      min-height: 300px;
-      border: none;
-      background: white;
-      border-radius: 8px;
-    }
-    .modal-body img { max-width: 100%; height: auto; border-radius: 8px; }
     .modal-body pre {
       background: var(--bg-card);
       padding: 12px;
@@ -346,29 +352,31 @@
       font-family: inherit;
     }
     .modal-footer {
-      padding: 14px 20px;
+      padding: 12px 18px;
       border-top: 1px solid var(--border);
       display: flex;
       gap: 10px;
       justify-content: flex-end;
     }
-    .loading-spinner {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 40px;
-      gap: 10px;
-      color: var(--text-secondary);
+    .loading-pulse {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
     }
   </style>
 </head>
 <body>
 <div class="app-container">
   <div class="header">
-    <div>
-      <h1>📧 TempMail44</h1>
-      <div class="subtitle">Telegram instant inbox</div>
-    </div>
+    <h1>📧 TempMail44</h1>
+    <div class="subtitle">Telegram instant inbox</div>
   </div>
 
   <div class="email-creator">
@@ -418,8 +426,8 @@
     </div>
     <div class="modal-meta" id="modalMeta"></div>
     <div class="modal-body" id="modalBody">
-      <div class="loading-spinner">
-        <div class="spinner"></div> Loading message...
+      <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
+        <div class="loading-pulse"></div> Loading...
       </div>
     </div>
     <div class="modal-footer">
@@ -439,8 +447,8 @@
     let isPolling = false;
     let knownMessageIds = new Set();
     let currentViewingHash = null;
-    // Store full message list for quick access
-    let messageListCache = [];
+    // Store full message objects with content for instant viewing
+    let messageCache = {}; // hash -> full message object
 
     function showToast(msg, isError = false) {
       const old = document.querySelector('.toast');
@@ -463,6 +471,44 @@
       });
     }
 
+    // Format date nicely
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      try {
+        const d = new Date(dateStr);
+        const now = new Date();
+        const diffMs = now - d;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+        
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins}m ago`;
+        if (diffHours < 24) return `${diffHours}h ago`;
+        if (diffDays < 7) return `${diffDays}d ago`;
+        
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: d.getFullYear() !== now.getFullYear() ? 'numeric' : undefined });
+      } catch (e) {
+        return dateStr;
+      }
+    }
+
+    function formatFullDate(dateStr) {
+      if (!dateStr) return 'Unknown date';
+      try {
+        return new Date(dateStr).toLocaleString('en-US', {
+          weekday: 'short',
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      } catch (e) {
+        return dateStr;
+      }
+    }
+
     // Modal functions
     window.closeModal = function() {
       document.getElementById('messageModal').style.display = 'none';
@@ -475,7 +521,7 @@
       try {
         await fetch(`${API_BASE}/messages/${API_KEY}/${currentViewingHash}`, { method: 'DELETE' });
         knownMessageIds.delete(currentViewingHash);
-        messageListCache = messageListCache.filter(m => (m.hash || m.id) !== currentViewingHash);
+        delete messageCache[currentViewingHash];
         showToast('Message deleted');
         closeModal();
         await checkMessages(true);
@@ -484,7 +530,7 @@
       }
     };
 
-    // FIXED: Improved message opening with multiple fallback methods
+    // INSTANT OPEN: Use cached data immediately, fetch fresh in background
     async function openMessageInModal(hash) {
       if (!hash) return;
       currentViewingHash = hash;
@@ -493,112 +539,98 @@
       const modalMeta = document.getElementById('modalMeta');
       const modalBody = document.getElementById('modalBody');
       
+      // Show modal immediately
       modal.style.display = 'flex';
+      
+      // Check cache first for instant display
+      const cached = messageCache[hash];
+      if (cached && (cached.body || cached.text || cached.html || cached._fullContent)) {
+        // INSTANT RENDER from cache
+        displayMessageInModal(cached);
+        console.log('⚡ Instant display from cache');
+        
+        // Still fetch fresh in background (silent update)
+        fetchAndUpdateMessage(hash).catch(() => {});
+        return;
+      }
+      
+      // Show loading state
       modalSubject.textContent = 'Loading...';
       modalMeta.innerHTML = '';
-      modalBody.innerHTML = '<div class="loading-spinner"><div class="spinner"></div> Loading message...</div>';
+      modalBody.innerHTML = '<div style="text-align: center; padding: 30px; color: var(--text-secondary);"><div class="loading-pulse"></div> Loading message...</div>';
       
-      let messageData = null;
+      // Fetch message data
+      const messageData = await fetchMessageData(hash);
       
-      // Method 1: Try to find message in cached list first (fastest)
-      const cachedMessage = messageListCache.find(m => (m.hash || m.id) === hash);
-      if (cachedMessage && (cachedMessage.body || cachedMessage.text || cachedMessage.html)) {
-        console.log('✅ Using cached message data');
-        messageData = cachedMessage;
-      }
-      
-      // Method 2: Try API endpoint for single message
-      if (!messageData) {
-        try {
-          console.log('🔍 Trying API endpoint for message:', hash);
-          const res = await fetch(`${API_BASE}/messages/${API_KEY}/${hash}`, {
-            cache: 'no-store',
-            headers: { 'Cache-Control': 'no-cache' }
-          });
-          
-          if (res.ok) {
-            const data = await res.json();
-            console.log('📨 API Response:', data);
-            
-            // Handle different response structures
-            if (data.data && (data.data.body || data.data.text || data.data.html)) {
-              messageData = data.data;
-            } else if (data.message && (data.message.body || data.message.text)) {
-              messageData = data.message;
-            } else if (data.body || data.text || data.html) {
-              messageData = data;
-            }
-          }
-        } catch (e) {
-          console.warn('⚠️ API method failed:', e.message);
-        }
-      }
-      
-      // Method 3: Try fallback POST request
-      if (!messageData) {
-        try {
-          console.log('🔍 Trying fallback method...');
-          const formData = new FormData();
-          formData.append('email', currentEmail);
-          formData.append('hash', hash);
-          
-          const fallbackRes = await fetch('https://tempmail44.com/get_message', {
-            method: 'POST',
-            body: formData,
-            cache: 'no-store'
-          });
-          
-          if (fallbackRes.ok) {
-            const data = await fallbackRes.json();
-            console.log('📨 Fallback Response:', data);
-            
-            if (data.message) {
-              messageData = data.message;
-            } else if (data.data) {
-              messageData = data.data;
-            } else if (data.body || data.text) {
-              messageData = data;
-            }
-          }
-        } catch (e) {
-          console.warn('⚠️ Fallback method failed:', e.message);
-        }
-      }
-      
-      // Method 4: Try to fetch all messages and find this one
-      if (!messageData && currentEmail) {
-        try {
-          console.log('🔍 Trying to find message in full list...');
-          const allMessages = await fetchMessages();
-          const found = allMessages.find(m => (m.hash || m.id) === hash);
-          if (found) {
-            messageData = found;
-            // Update cache
-            messageListCache = allMessages;
-          }
-        } catch (e) {
-          console.warn('⚠️ List method failed:', e.message);
-        }
-      }
-      
-      // Display the message if found
       if (messageData) {
+        // Cache it for next time
+        messageCache[hash] = messageData;
         displayMessageInModal(messageData);
       } else {
-        // If all methods fail, show error with option to open in browser
-        console.error('❌ Could not load message content');
         modalBody.innerHTML = `
           <div style="text-align: center; padding: 20px;">
-            <p style="color: var(--danger); margin-bottom: 16px;">❌ Could not load message content</p>
-            <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.9rem;">
-              The message might have been deleted or the server is unavailable.
-            </p>
+            <p style="color: var(--danger); margin-bottom: 16px;">❌ Could not load message</p>
             <button class="btn-sm btn-primary" onclick="window.open('https://tempmail44.com/view/${hash}', '_blank')">
               🌐 Open in Browser
             </button>
           </div>
         `;
       }
+    }
+    
+    // Silent background fetch to update cache
+    async function fetchAndUpdateMessage(hash) {
+      try {
+        const data = await fetchMessageData(hash);
+        if (data) {
+          messageCache[hash] = data;
+          // If still viewing same message, update display
+          if (currentViewingHash === hash) {
+            displayMessageInModal(data);
+          }
+        }
+      } catch (e) {
+        // Silent fail - cache is good enough
+      }
+    }
+    
+    async function fetchMessageData(hash) {
+      // Method 1: API endpoint
+      try {
+        const res = await fetch(`${API_BASE}/messages/${API_KEY}/${hash}`, {
+          cache: 'no-store',
+          headers: { 'Cache-Control': 'no-cache' }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const msg = data.data || data.message || data;
+          if (msg && (msg.body || msg.text || msg.html)) return msg;
+        }
+      } catch (e) {}
+      
+      // Method 2: Fallback POST
+      try {
+        const formData = new FormData();
+        formData.append('email', currentEmail);
+        formData.append('hash', hash);
+        const res = await fetch('https://tempmail44.com/get_message', {
+          method: 'POST', body: formData, cache: 'no-store'
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const msg = data.message || data.data || data;
+          if (msg && (msg.body || msg.text || msg.html)) return msg;
+        }
+      } catch (e) {}
+      
+      // Method 3: Find in full message list
+      try {
+        const allMessages = await fetchMessages();
+        const found = allMessages.find(m => (m.hash || m.id) === hash);
+        if (found) return found;
+      } catch (e) {}
+      
+      return null;
     }
     
     function displayMessageInModal(message) {
@@ -610,36 +642,30 @@
       const from = message.from || message.from_email || 'Unknown';
       const to = message.to || currentEmail || '';
       const date = message.time || message.created_at || message.date || '';
-      const dateStr = date ? new Date(date).toLocaleString() : 'Unknown date';
       
-      // Get body content - check all possible fields
-      const body = message.body || message.text || message.content || '';
+      // Get body content
+      const body = message.body || message.text || message.content || message._fullContent || '';
       const htmlBody = message.html || message.body_html || message.message_html || '';
       
       modalSubject.textContent = subject;
       modalMeta.innerHTML = `
         <span>👤 <strong>From:</strong> ${escapeStr(from)}</span>
         <span>📧 <strong>To:</strong> ${escapeStr(to)}</span>
-        <span>🕒 <strong>Date:</strong> ${dateStr}</span>
+        <span>🕒 <strong>Date:</strong> ${formatFullDate(date)}</span>
       `;
       
-      // Render body content
+      // Render body
       if (htmlBody && htmlBody.trim().length > 0) {
-        // HTML content available
         modalBody.innerHTML = htmlBody;
       } else if (body && body.trim().length > 0) {
-        // Check if body contains HTML
         if (body.trim().startsWith('<') && body.includes('>')) {
           modalBody.innerHTML = body;
         } else {
-          // Plain text - escape and preserve formatting
           modalBody.innerHTML = `<pre style="white-space: pre-wrap; font-family: inherit; background: none; padding: 0; color: var(--text-primary);">${escapeStr(body)}</pre>`;
         }
       } else {
         modalBody.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">📭 This message has no content</p>';
       }
-      
-      console.log('✅ Message displayed successfully');
     }
 
     // Load domains
@@ -687,7 +713,7 @@
         input.select();
         document.execCommand('copy');
         document.body.removeChild(input);
-        showToast('Copied (fallback)');
+        showToast('Copied');
       }
     };
 
@@ -695,12 +721,11 @@
       if (!currentEmail) return;
       const refreshBtn = document.getElementById('refreshBtn');
       const statusEl = document.getElementById('refreshStatus');
-      refreshBtn.style.transform = 'rotate(360deg)';
       refreshBtn.style.transition = '0.3s';
+      refreshBtn.style.transform = 'rotate(360deg)';
       statusEl.style.display = 'flex';
       
       knownMessageIds.clear();
-      messageListCache = [];
       await checkMessages(true);
       
       setTimeout(() => {
@@ -711,8 +736,7 @@
     };
 
     function updateLastRefreshTime() {
-      const now = new Date();
-      document.getElementById('lastRefresh').textContent = `Last check: ${now.toLocaleTimeString()}`;
+      document.getElementById('lastRefresh').textContent = `Last check: ${new Date().toLocaleTimeString()}`;
     }
 
     window.deleteEmailAccount = async function() {
@@ -724,7 +748,7 @@
         currentEmail = null;
         localStorage.removeItem('tempEmail');
         knownMessageIds.clear();
-        messageListCache = [];
+        messageCache = {};
         hideCurrentEmailBox();
         document.getElementById('messagesList').innerHTML = '<div class="empty-state">📭 Email deleted</div>';
         document.getElementById('messageCount').textContent = '0';
@@ -755,7 +779,7 @@
         showCurrentEmailBox(email);
         document.getElementById('emailName').value = '';
         knownMessageIds.clear();
-        messageListCache = [];
+        messageCache = {};
         startPolling();
         showToast('Email ready!');
       } catch (e) {
@@ -766,22 +790,16 @@
       }
     };
 
-    // Fetch messages - returns array
     async function fetchMessages() {
       const url = `${API_BASE}/messages/${API_KEY}/${encodeURIComponent(currentEmail)}`;
       try {
         const res = await fetch(url, { cache: 'no-store', headers: {'Cache-Control': 'no-cache'} });
         if (res.ok) {
           const data = await res.json();
-          if (data.status && Array.isArray(data.messages)) {
-            return data.messages;
-          }
+          if (data.status && Array.isArray(data.messages)) return data.messages;
         }
-      } catch (e) {
-        console.warn('Primary fetch failed:', e.message);
-      }
+      } catch (e) {}
       
-      // Fallback
       try {
         const formData = new FormData();
         formData.append('email', currentEmail);
@@ -791,7 +809,6 @@
         const fallbackData = await fallbackRes.json();
         return fallbackData.messages || fallbackData.data?.messages || [];
       } catch (e) {
-        console.warn('Fallback fetch failed:', e.message);
         return [];
       }
     }
@@ -801,7 +818,15 @@
       isPolling = true;
       try {
         const messages = await fetchMessages();
-        messageListCache = messages; // Update cache
+        
+        // Update cache with new messages
+        messages.forEach(m => {
+          const id = m.hash || m.id;
+          if (id && !messageCache[id]) {
+            messageCache[id] = m;
+          }
+        });
+        
         document.getElementById('messageCount').textContent = messages.length;
         
         let newDetected = false;
@@ -836,51 +861,68 @@
         return;
       }
       container.innerHTML = '';
+      
+      // Sort by date (newest first)
+      messages.sort((a, b) => {
+        const dateA = new Date(a.time || a.created_at || 0);
+        const dateB = new Date(b.time || b.created_at || 0);
+        return dateB - dateA;
+      });
+      
       messages.forEach((m, idx) => {
         const id = m.hash || m.id || '';
         const isNewCard = highlightNew && !knownMessageIds.has(id);
         const card = document.createElement('div');
         card.className = 'message-card' + (isNewCard ? ' new-message' : '');
-        card.style.animationDelay = `${idx * 0.03}s`;
+        card.style.animationDelay = `${idx * 0.02}s`;
+        
         const subject = escapeStr(m.subject || 'No subject');
         const from = escapeStr(m.from || m.from_email || 'Unknown');
         const time = m.time || m.created_at || '';
-        const dateStr = time ? new Date(time).toLocaleString() : '';
+        const displayDate = formatDate(time);
+        
         card.innerHTML = `
-          <div class="message-header">
+          <div class="message-top">
             <span class="message-subject">${subject}</span>
-            ${isNewCard ? '<span class="new-indicator">NEW</span>' : ''}
+            <span class="message-date">${displayDate}</span>
           </div>
-          <div class="message-meta">
-            <span>👤 ${from}</span>
-            ${dateStr ? `<span>🕒 ${dateStr}</span>` : ''}
-          </div>
+          <div class="message-from">👤 ${from}</div>
           <div class="message-actions">
             <button class="btn-sm btn-primary view-msg-btn" data-hash="${escapeStr(id)}">📖 View</button>
             <button class="btn-sm btn-danger delete-msg-btn" data-hash="${escapeStr(id)}">🗑️ Delete</button>
           </div>
         `;
+        
+        // Click on card to view (except buttons)
+        card.addEventListener('click', (e) => {
+          if (!e.target.closest('button')) {
+            openMessageInModal(id);
+          }
+        });
+        
         container.appendChild(card);
       });
       
-      // View button - opens modal
+      // View buttons
       document.querySelectorAll('.view-msg-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
-          const hash = e.currentTarget.getAttribute('data-hash');
+          e.stopPropagation();
+          const hash = btn.getAttribute('data-hash');
           if (hash) openMessageInModal(hash);
         });
       });
       
-      // Delete button
+      // Delete buttons
       document.querySelectorAll('.delete-msg-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
-          const hash = e.currentTarget.getAttribute('data-hash');
+          e.stopPropagation();
+          const hash = btn.getAttribute('data-hash');
           if (!hash || !currentEmail) return;
           if (!confirm('Delete this message?')) return;
           try {
             await fetch(`${API_BASE}/messages/${API_KEY}/${hash}`, { method: 'DELETE' });
             knownMessageIds.delete(hash);
-            messageListCache = messageListCache.filter(m => (m.hash || m.id) !== hash);
+            delete messageCache[hash];
             showToast('Message deleted');
             await checkMessages(true);
           } catch (err) {
@@ -902,7 +944,7 @@
       }, 8000);
     }
 
-    // Close modal handlers
+    // Modal close handlers
     document.getElementById('messageModal').addEventListener('click', function(e) {
       if (e.target === this) closeModal();
     });
@@ -920,9 +962,6 @@
         pollTimer = null;
       }
     });
-    window.addEventListener('focus', () => {
-      if (currentEmail && !pollTimer) startPolling();
-    });
 
     // Telegram Web App
     if (window.Telegram?.WebApp) {
@@ -938,7 +977,6 @@
     } else {
       hideCurrentEmailBox();
     }
-    console.log('📧 TempMail44 ready (Telegram native)');
   })();
 </script>
 </body>
