@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>TempMail - Free Temporary Email Service | Disposable Email Address</title>
+    <meta name="description" content="Create free temporary email addresses instantly. Protect your privacy with disposable email. No registration required. Temp mail, fake email, throwaway email, burner email.">
+    <meta name="keywords" content="temporary email, temp mail, disposable email, fake email, throwaway email, burner email, temp email, temporary mail, one time email, 10 minute mail, temporary email address, fake mail, anonymous email, spam free email, privacy email, free email, temp mail, temporary email, disposable email, fake email generator, temp email generator, free temp mail, tempmail, temp-mail, temporary inbox, trash mail, guerilla mail, mailinator alternative, tempmail44">
+    <meta name="author" content="TempMail">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    <meta name="theme-color" content="#0a0e27">
+    
+    <meta property="og:title" content="TempMail - Free Temporary Email Service">
+    <meta property="og:description" content="Create free temporary email addresses instantly. Protect your privacy with disposable email. No registration required.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="TempMail44">
+    <meta property="og:locale" content="en_US">
+    
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="TempMail44 - Free Temporary Email Service">
+    <meta name="twitter:description" content="Create free temporary email addresses instantly. Protect your privacy with disposable email.">
+    
+    <link rel="canonical" href="https://tempmail44.com">
+    
+    <!-- NO ADS SCRIPTS - No AdsGram, No Google Tag Manager, No Google Analytics -->
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0a0e27;
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 16px;
+            line-height: 1.6;
+        }
+        
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        h3 { font-size: 18px; font-weight: 600; }
+        .subtitle { color: #94a3b8; font-size: 13px; margin-bottom: 16px; }
+        
+        .card { background: #131837; padding: 16px; margin: 10px 0; border-radius: 12px; border: 1px solid #2d3454; transition: border-color 0.2s ease; }
+        .card:hover { border-color: #4f46e5; }
+        
+        .btn { background: #4f46e5; color: #ffffff; border: none; padding: 12px 18px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn:hover:not(:disabled) { background: #6366f1; transform: translateY(-1px); }
+        .btn:active:not(:disabled) { transform: translateY(0); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-danger { background: #ef4444; }
+        .btn-danger:hover:not(:disabled) { background: #dc2626; }
+        .btn-success { background: #10b981; }
+        .btn-success:hover:not(:disabled) { background: #059669; }
+        .btn-sm { padding: 6px 14px; font-size: 13px; width: auto; }
+        .btn-full { width: 100%; }
+        
+        .email-address { color: #6366f1; font-weight: 600; word-break: break-all; font-size: 15px; flex: 1; }
+        .email-container { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .label { font-size: 11px; text-transform: uppercase; color: #94a3b8; letter-spacing: 1px; font-weight: 600; }
+        
+        .subject { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
+        .from { font-size: 13px; color: #94a3b8; margin: 4px 0 8px; }
+        .date { font-size: 11px; color: #64748b; float: right; }
+        .action-row { display: flex; gap: 8px; margin-top: 10px; }
+        
+        .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(79, 70, 229, 0.1); border-top-color: #4f46e5; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Full-Screen Message Modal */
+        .modal-overlay { 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0, 0, 0, 0.95); 
+            backdrop-filter: blur(8px); 
+            display: none; 
+            align-items: center;
+            justify-content: center;
+            z-index: 1000; 
+            animation: fadeIn 0.2s ease; 
+        }
+        .modal-overlay.active { 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-container { 
+            background: #131837; 
+            width: 100%; 
+            height: 100%;
+            display: flex; 
+            flex-direction: column; 
+            animation: slideUp 0.3s ease;
+            position: relative;
+        }
+        
+        @media (min-width: 768px) {
+            .modal-overlay {
+                padding: 20px;
+            }
+            .modal-container {
+                width: 95%;
+                height: 95%;
+                max-width: 1200px;
+                max-height: 95vh;
+                border-radius: 14px;
+                border: 1px solid #2d3454;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+                margin: auto;
+            }
+        }
+        
+        .modal-header { 
+            flex-shrink: 0; 
+            padding: 12px 16px; 
+            border-bottom: 1px solid #2d3454; 
+            background: #0f132a;
+            position: relative;
+        }
+        .modal-header h3 { 
+            margin: 0 0 4px; 
+            font-size: 16px; 
+            word-break: break-word; 
+            padding-right: 35px;
+            color: #e2e8f0;
+            line-height: 1.3;
+        }
+        .modal-meta { 
+            font-size: 11px; 
+            color: #94a3b8; 
+            line-height: 1.5; 
+        }
+        .modal-meta strong {
+            color: #cbd5e1;
+        }
+        
+        .modal-body { 
+            flex: 1 1 auto;
+            background: #ffffff; 
+            padding: 20px; 
+            word-break: break-word; 
+            line-height: 1.7; 
+            font-size: 15px; 
+            overflow-y: auto; 
+            color: #1a1a1a;
+            -webkit-overflow-scrolling: touch;
+            min-height: 0;
+        }
+        
+        .modal-body img { max-width: 100%; height: auto; border-radius: 8px; }
+        .modal-body a { color: #4f46e5; word-break: break-all; text-decoration: underline; }
+        .modal-body pre { white-space: pre-wrap; word-break: break-word; background: transparent; font-family: inherit; color: #1a1a1a; font-size: 15px; line-height: 1.7; }
+        .modal-body table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+        .modal-body table td, .modal-body table th { border: 1px solid #ddd; padding: 8px; }
+        .modal-body h1, .modal-body h2, .modal-body h3, .modal-body h4 { color: #1a1a1a; margin: 16px 0 8px; }
+        .modal-body p { margin: 12px 0; }
+        .modal-body blockquote { border-left: 3px solid #4f46e5; padding-left: 16px; margin: 12px 0; color: #555; }
+        
+        .modal-footer { 
+            flex-shrink: 0; 
+            padding: 10px 16px; 
+            border-top: 1px solid #2d3454; 
+            display: flex; 
+            justify-content: flex-end; 
+            gap: 8px; 
+            background: #0f132a;
+        }
+        
+        .modal-close { 
+            background: rgba(239, 68, 68, 0.1); 
+            border: 1px solid rgba(239, 68, 68, 0.3); 
+            color: #ef4444; 
+            font-size: 18px; 
+            cursor: pointer; 
+            padding: 4px 8px; 
+            line-height: 1; 
+            transition: all 0.2s; 
+            position: absolute; 
+            top: 10px; 
+            right: 10px; 
+            border-radius: 6px;
+            width: 30px;
+            height: 30px;
+            z-index: 10;
+        }
+        .modal-close:hover { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; }
+        
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #10b981; color: #ffffff; padding: 12px 24px; border-radius: 24px; font-size: 13px; font-weight: 500; z-index: 2000; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3); animation: toastIn 0.3s ease, toastOut 0.3s ease 2s forwards; }
+        .toast.error { background: #ef4444; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3); }
+        .toast.info { background: #3b82f6; box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3); }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(-20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+        @keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateX(-50%) translateY(-20px); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .flex { display: flex; }
+        .flex-between { justify-content: space-between; align-items: center; }
+        .flex-center { justify-content: center; align-items: center; }
+        .gap-2 { gap: 8px; }
+        .gap-3 { gap: 12px; }
+        .mt-2 { margin-top: 8px; }
+        .mt-3 { margin-top: 12px; }
+        .mt-4 { margin-top: 16px; }
+        .text-center { text-align: center; }
+        .relative { position: relative; }
+        
+        .copy-btn { background: #1e293b; border: 1px solid #334155; color: #ffffff; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 18px; transition: all 0.2s; flex-shrink: 0; }
+        .copy-btn:hover { background: #334155; border-color: #4f46e5; }
+        
+        .empty-state { color: #64748b; padding: 40px 20px; text-align: center; }
+        .empty-state-icon { font-size: 48px; margin-bottom: 12px; }
+        
+        .info-banner { background: linear-gradient(135deg, #4f46e5, #6366f1); padding: 12px 16px; border-radius: 8px; margin: 12px 0; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+        
+        .seo-content { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+        
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin: 16px 0; }
+        .feature-item { background: #131837; border: 1px solid #2d3454; border-radius: 8px; padding: 12px; text-align: center; font-size: 12px; color: #94a3b8; }
+        .feature-icon { font-size: 24px; margin-bottom: 4px; }
+        
+        .social-accounts-banner { background: linear-gradient(135deg, #1e293b, #131837); border: 1px solid #2d3454; border-radius: 12px; padding: 16px; margin: 16px 0; text-align: center; }
+        .social-accounts-banner h3 { color: #6366f1; margin-bottom: 8px; font-size: 18px; }
+        .social-accounts-banner p { color: #94a3b8; font-size: 14px; margin-bottom: 12px; }
+        .social-icons { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+        .social-icon-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; font-size: 12px; transition: color 0.2s; }
+        .social-icon-item:hover { color: #6366f1; }
+        .social-icon-emoji { font-size: 32px; }
+        
+        /* Domain and Custom Email styles */
+        .custom-email-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .custom-email-input {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            flex: 1;
+            min-width: 120px;
+        }
+        .custom-email-input:focus { outline: none; border-color: #4f46e5; }
+        .custom-email-input::placeholder { color: #64748b; }
+        .custom-email-separator { color: #94a3b8; font-size: 18px; font-weight: 600; }
+        .domain-select {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            min-width: 130px;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 32px;
+        }
+        .domain-select:focus { outline: none; border-color: #4f46e5; }
+        .domain-select option { background: #131837; color: #ffffff; }
+        .create-custom-btn {
+            background: #10b981;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        .create-custom-btn:hover:not(:disabled) { background: #059669; transform: translateY(-1px); }
+        .create-custom-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .domain-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .change-domain-btn {
+            background: #6366f1;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        .change-domain-btn:hover:not(:disabled) { background: #818cf8; transform: translateY(-1px); }
+        .change-domain-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .domain-label {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 12px;
+            margin-bottom: 4px;
+        }
+        .toggle-custom-btn {
+            background: none;
+            border: 1px solid #334155;
+            color: #94a3b8;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            margin-top: 8px;
+        }
+        .toggle-custom-btn:hover { border-color: #6366f1; color: #6366f1; }
+
+        @media (max-width: 400px) {
+            .custom-email-row { flex-direction: column; }
+            .custom-email-separator { display: none; }
+            .domain-select { width: 100%; }
+            .create-custom-btn { width: 100%; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="seo-content" aria-hidden="true">
+        <h1>TempMail44 - Free Temporary Email Service</h1>
+        <p>Create disposable temporary email addresses instantly. Protect your privacy with our free temp mail service. No registration required.</p>
+    </div>
+    
+    <header>
+        <h2>📧 TempMail44</h2>
+        <p class="subtitle">Free Temporary Email • Protect Your Privacy • No Registration Required</p>
+    </header>
+    
+    <div class="features">
+        <div class="feature-item"><div class="feature-icon">🚀</div><div>Instant Setup</div></div>
+        <div class="feature-item"><div class="feature-icon">🔒</div><div>Privacy Protected</div></div>
+        <div class="feature-item"><div class="feature-icon">📧</div><div>Spam Protection</div></div>
+        <div class="feature-item"><div class="feature-icon">⚡</div><div>Auto Refresh</div></div>
+    </div>
+    
+    <!-- Generic use cases -->
+    <div class="social-accounts-banner">
+        <h3>🌐 Use Temporary Email Anywhere</h3>
+        <p>Protect your privacy when signing up for websites, apps, newsletters, online services, and free trials.</p>
+        <div class="social-icons">
+            <div class="social-icon-item"><span class="social-icon-emoji">🌐</span><span>Websites</span></div>
+            <div class="social-icon-item"><span class="social-icon-emoji">📱</span><span>Apps</span></div>
+            <div class="social-icon-item"><span class="social-icon-emoji">📰</span><span>Newsletters</span></div>
+            <div class="social-icon-item"><span class="social-icon-emoji">🛍️</span><span>Shopping</span></div>
+        </div>
+    </div>
+    
+    <!-- Custom Email Creation Card -->
+    <section id="customEmailSection" class="card" style="display: block;">
+        <div class="label">✏️ Create Custom Email</div>
+        <div class="custom-email-row mt-2">
+            <input 
+                type="text" 
+                id="customUsername" 
+                class="custom-email-input" 
+                placeholder="Enter username"
+                maxlength="30"
+                autocomplete="off"
+            >
+            <span class="custom-email-separator">@</span>
+            <select id="customDomainSelect" class="domain-select">
+                <option value="">Loading...</option>
+            </select>
+            <button id="createCustomBtn" class="create-custom-btn" onclick="handleCreateCustomEmailDirect()" disabled>✨ Create</button>
+        </div>
+        <button class="toggle-custom-btn" onclick="toggleCustomSection()" style="display: none;" id="toggleCustomBtn">
+            ✏️ Create Custom Email Instead
+        </button>
+    </section>
+    
+    <section id="emailSection" class="card" style="display: none;">
+        <div class="label">Your Temporary Email Address</div>
+        <div class="email-container mt-2">
+            <span id="emailText" class="email-address"></span>
+            <button class="copy-btn" onclick="copyEmailToClipboard()" title="Copy temporary email address">📋</button>
+        </div>
+        <div class="domain-label">🔄 Change Domain</div>
+        <div class="domain-selector">
+            <select id="domainSelect" class="domain-select">
+                <option value="">Loading domains...</option>
+            </select>
+            <button id="changeDomainBtn" class="change-domain-btn" onclick="handleChangeDomainDirect()" disabled>🔄 Change</button>
+        </div>
+    </section>
+    
+    <div class="flex gap-3 mt-3">
+        <button class="btn btn-full" onclick="handleCreateEmailDirect()" id="createBtn">📨 Generate Random Email</button>
+        <button class="btn btn-danger btn-full" onclick="handleDeleteEmail()" id="deleteBtn" style="display: none;">🗑️ Delete Email</button>
+    </div>
+    
+    <div class="flex flex-between mt-4">
+        <h3>📥 Inbox</h3>
+        <button class="btn btn-sm" onclick="handleRefreshMessages()" id="refreshBtn">🔄 Refresh</button>
+    </div>
+    <div id="messageList"></div>
+    
+    <!-- Message View Modal -->
+    <div id="messageModal" class="modal-overlay" onclick="handleModalOverlayClick(event)">
+        <div class="modal-container relative">
+            <button class="modal-close" onclick="closeMessageModal()" aria-label="Close modal">✕</button>
+            <div class="modal-header">
+                <h3 id="modalSubject">Loading...</h3>
+                <div id="modalMeta" class="modal-meta"></div>
+            </div>
+            <div id="modalBody" class="modal-body">
+                <div class="text-center" style="padding: 40px 20px; color: #64748b;">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 12px;">Loading message content...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-sm btn-danger" onclick="handleDeleteCurrentMessage()">🗑️ Delete</button>
+                <button class="btn btn-sm" onclick="closeMessageModal()">✕ Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- NO AD CONFIRMATION DIALOG - Removed completely -->
+    <!-- NO AD LOADING OVERLAY - Removed completely -->
+    
+    <!-- Footer -->
+    <footer style="margin-top: 30px; padding: 20px 0; border-top: 1px solid #2d3454; text-align: center; color: #64748b; font-size: 12px;">
+        <p>TempMail44 - Free Temporary Email Service | Protect Your Privacy Online</p>
+        <p style="margin-top: 4px;">No Registration Required • Instant Setup • Privacy Protected • Spam Free • No Ads</p>
+    </footer>
+    
+    <!-- NO NOSCRIPT TAG - Removed -->
+    
+    <script>
+        const CONFIG = {
+            API_BASE_URL: 'https://tempmail44.com/api',
+            API_KEY: 'pTTUF8gTt48p6YcG5PzwiTtQZhQWKVE',
+            POLL_INTERVAL: 8000
+            // NO ADSGRAM_BLOCK_ID - Removed
+        };
+        
+        const AppState = {
+            currentEmail: localStorage.getItem('tempEmail') || null,
+            messageList: [],
+            currentMessageHash: null,
+            pollInterval: null,
+            availableDomains: [],
+            currentDomain: null
+        };
+        
+        const Utils = {
+            showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 2300);
+            },
+            sanitizeHTML(str) { const div = document.createElement('div'); div.textContent = str; return div.innerHTML; },
+            formatRelativeDate(dateStr) {
+                if (!dateStr) return '';
+                try {
+                    const date = new Date(dateStr), now = new Date();
+                    const diffMins = Math.floor((now - date) / 60000);
+                    if (diffMins < 1) return 'Just now';
+                    if (diffMins < 60) return `${diffMins}m ago`;
+                    const diffHours = Math.floor(diffMins / 60);
+                    if (diffHours < 24) return `${diffHours}h ago`;
+                    return date.toLocaleDateString();
+                } catch (e) { return dateStr; }
+            },
+            formatFullDate(dateStr) { if (!dateStr) return ''; try { return new Date(dateStr).toLocaleString(); } catch (e) { return dateStr; } },
+            safeString(val) { return val ? String(val) : ''; },
+            isValidUsername(username) {
+                return /^[a-zA-Z0-9._-]{3,30}$/.test(username);
+            }
+        };
+        
+        // ==========================================
+        // DOMAIN MANAGEMENT
+        // ==========================================
+        async function fetchAvailableDomains() {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/domains/${CONFIG.API_KEY}/free`);
+                const data = await response.json();
+                
+                if (data.status && data.data && data.data.domains && Array.isArray(data.data.domains)) {
+                    let freeDomains = data.data.domains.filter(d => d.type === 'Free' || d.type === 'free');
+                    if (freeDomains.length === 0) freeDomains = data.data.domains;
+                    AppState.availableDomains = freeDomains;
+                    return freeDomains;
+                } else {
+                    const fallbackResponse = await fetch(`${CONFIG.API_BASE_URL}/domains/${CONFIG.API_KEY}/all`);
+                    const fallbackData = await fallbackResponse.json();
+                    if (fallbackData.status && fallbackData.data && fallbackData.data.domains && Array.isArray(fallbackData.data.domains)) {
+                        let domains = fallbackData.data.domains.filter(d => d.type === 'Free' || d.type === 'free');
+                        if (domains.length === 0) domains = fallbackData.data.domains;
+                        AppState.availableDomains = domains;
+                        return domains;
+                    }
+                    AppState.availableDomains = [];
+                    return [];
+                }
+            } catch (error) {
+                console.error('Error fetching domains:', error);
+                AppState.availableDomains = [];
+                return [];
+            }
+        }
+        
+        function populateDomainSelectors(domains) {
+            const select = document.getElementById('domainSelect');
+            const customSelect = document.getElementById('customDomainSelect');
+            if (!select || !customSelect) return;
+            
+            select.innerHTML = '';
+            customSelect.innerHTML = '';
+            
+            if (!domains || domains.length === 0) {
+                select.innerHTML = '<option value="">No domains available</option>';
+                customSelect.innerHTML = '<option value="">No domains available</option>';
+                document.getElementById('changeDomainBtn').disabled = true;
+                document.getElementById('createCustomBtn').disabled = true;
+                return;
+            }
+            
+            domains.forEach((domain, index) => {
+                const domainName = domain.domain || domain.name || domain;
+                const value = typeof domainName === 'string' ? domainName : String(domainName);
+                
+                const option1 = document.createElement('option');
+                option1.value = value;
+                option1.textContent = `@${value}`;
+                if (AppState.currentDomain === value) option1.selected = true;
+                if (!AppState.currentDomain && index === 0) { option1.selected = true; AppState.currentDomain = value; }
+                select.appendChild(option1);
+                
+                const option2 = document.createElement('option');
+                option2.value = value;
+                option2.textContent = `@${value}`;
+                if (index === 0) option2.selected = true;
+                customSelect.appendChild(option2);
+            });
+            
+            updateChangeDomainButton();
+            updateCustomCreateButton();
+        }
+        
+        async function loadDomains() {
+            const domains = await fetchAvailableDomains();
+            populateDomainSelectors(domains);
+            if (AppState.currentEmail && !AppState.currentDomain) {
+                const parts = AppState.currentEmail.split('@');
+                if (parts.length === 2) {
+                    AppState.currentDomain = parts[1];
+                    const select = document.getElementById('domainSelect');
+                    for (let i = 0; i < select.options.length; i++) {
+                        if (select.options[i].value === AppState.currentDomain) { select.selectedIndex = i; break; }
+                    }
+                }
+            }
+        }
+        
+        function updateChangeDomainButton() {
+            const btn = document.getElementById('changeDomainBtn');
+            if (btn) btn.disabled = !AppState.currentEmail || AppState.availableDomains.length === 0;
+        }
+        
+        function updateCustomCreateButton() {
+            const btn = document.getElementById('createCustomBtn');
+            const usernameInput = document.getElementById('customUsername');
+            if (btn && usernameInput) {
+                btn.disabled = !Utils.isValidUsername(usernameInput.value.trim()) || AppState.availableDomains.length === 0;
+            }
+        }
+        
+        // ==========================================
+        // DIRECT ACTIONS - NO ADS, NO CONFIRMATION DIALOGS
+        // ==========================================
+        
+        // Change Domain - Direct execution, no ad
+        async function handleChangeDomainDirect() {
+            if (!AppState.currentEmail) { Utils.showToast('Create an email first', 'error'); return; }
+            const select = document.getElementById('domainSelect');
+            const newDomain = select.value;
+            if (!newDomain) { Utils.showToast('Please select a domain', 'error'); return; }
+            const currentDomain = AppState.currentEmail.split('@')[1];
+            if (currentDomain === newDomain) { Utils.showToast('Already using this domain', 'info'); return; }
+            
+            const currentUsername = AppState.currentEmail.split('@')[0];
+            const btn = document.getElementById('changeDomainBtn');
+            btn.disabled = true; btn.textContent = '⏳ Changing...';
+            
+            try {
+                const apiUrl = `${CONFIG.API_BASE_URL}/emails/${CONFIG.API_KEY}/${encodeURIComponent(AppState.currentEmail)}/${encodeURIComponent(currentUsername)}/${encodeURIComponent(newDomain)}`;
+                const response = await fetch(apiUrl, { method: 'POST' });
+                const data = await response.json();
+                if (data.status && data.data) {
+                    AppState.currentEmail = data.data.email;
+                    AppState.currentDomain = newDomain;
+                    localStorage.setItem('tempEmail', AppState.currentEmail);
+                    displayEmailAddress();
+                    updateChangeDomainButton();
+                    startMessagePolling();
+                    Utils.showToast('✅ Domain changed to @' + newDomain, 'success');
+                } else {
+                    Utils.showToast('Failed to change domain', 'error');
+                }
+            } catch (error) {
+                Utils.showToast('Error changing domain', 'error');
+            } finally {
+                btn.disabled = false; btn.textContent = '🔄 Change';
+            }
+        }
+        
+        // Custom Email - Direct execution, no ad
+        async function handleCreateCustomEmailDirect() {
+            const usernameInput = document.getElementById('customUsername');
+            const username = usernameInput.value.trim();
+            const customSelect = document.getElementById('customDomainSelect');
+            const domain = customSelect.value;
+            
+            if (!Utils.isValidUsername(username)) {
+                Utils.showToast('Username must be 3-30 characters (letters, numbers, dots, underscores, hyphens)', 'error');
+                return;
+            }
+            if (!domain) { Utils.showToast('Please select a domain', 'error'); return; }
+            
+            const btn = document.getElementById('createCustomBtn');
+            btn.disabled = true; btn.textContent = '⏳ Creating...';
+            
+            try {
+                if (AppState.currentEmail) {
+                    // Update existing email
+                    const apiUrl = `${CONFIG.API_BASE_URL}/emails/${CONFIG.API_KEY}/${encodeURIComponent(AppState.currentEmail)}/${encodeURIComponent(username)}/${encodeURIComponent(domain)}`;
+                    const response = await fetch(apiUrl, { method: 'POST' });
+                    const data = await response.json();
+                    if (data.status && data.data) {
+                        AppState.currentEmail = data.data.email;
+                        AppState.currentDomain = domain;
+                        localStorage.setItem('tempEmail', AppState.currentEmail);
+                        displayEmailAddress();
+                        updateChangeDomainButton();
+                        startMessagePolling();
+                        document.getElementById('customUsername').value = '';
+                        Utils.showToast('✅ Email updated to ' + data.data.email, 'success');
+                    } else {
+                        Utils.showToast('Failed to update email', 'error');
+                    }
+                } else {
+                    // Create new email
+                    const res = await fetch(`${CONFIG.API_BASE_URL}/emails/${CONFIG.API_KEY}`, { method: 'POST' });
+                    const data = await res.json();
+                    if (data.status && data.data) {
+                        const oldEmail = data.data.email;
+                        const updateUrl = `${CONFIG.API_BASE_URL}/emails/${CONFIG.API_KEY}/${encodeURIComponent(oldEmail)}/${encodeURIComponent(username)}/${encodeURIComponent(domain)}`;
+                        const updateRes = await fetch(updateUrl, { method: 'POST' });
+                        const updateData = await updateRes.json();
+                        
+                        if (updateData.status && updateData.data) {
+                            AppState.currentEmail = updateData.data.email;
+                            AppState.currentDomain = domain;
+                        } else {
+                            AppState.currentEmail = oldEmail;
+                            AppState.currentDomain = data.data.domain;
+                        }
+                        localStorage.setItem('tempEmail', AppState.currentEmail);
+                        displayEmailAddress();
+                        await loadDomains();
+                        updateChangeDomainButton();
+                        startMessagePolling();
+                        document.getElementById('customUsername').value = '';
+                        Utils.showToast('✅ Email created: ' + AppState.currentEmail, 'success');
+                    }
+                }
+            } catch (error) {
+                Utils.showToast('Error creating email', 'error');
+            } finally {
+                btn.disabled = false; btn.textContent = '✨ Create';
+                updateCustomCreateButton();
+            }
+        }
+        
+        function toggleCustomSection() {
+            const customSection = document.getElementById('customEmailSection');
+            const toggleBtn = document.getElementById('toggleCustomBtn');
+            if (customSection.style.display === 'none') {
+                customSection.style.display = 'block';
+                toggleBtn.style.display = 'none';
+            }
+        }
+        
+        // ==========================================
+        // EMAIL - Generate Random (Direct, no ad)
+        // ==========================================
+        async function handleCreateEmailDirect() {
+            const btn = document.getElementById('createBtn');
+            btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Creating...';
+            try {
+                const res = await fetch(`${CONFIG.API_BASE_URL}/emails/${CONFIG.API_KEY}`, { method: 'POST' });
+                const data = await res.json();
+                AppState.currentEmail = data.data.email;
+                AppState.currentDomain = data.data.domain;
+                localStorage.setItem('tempEmail', AppState.currentEmail);
+                displayEmailAddress();
+                await loadDomains();
+                startMessagePolling();
+                Utils.showToast('✅ Created!', 'success');
+            } catch(e) { Utils.showToast('Failed', 'error'); }
+            finally {
+                btn.disabled = false; btn.innerHTML = '📨 Generate Random Email';
+            }
+        }
+        
+        async function handleDeleteEmail() {
+            if (!AppState.currentEmail || !confirm('Delete this email address? All messages will be lost.')) return;
+            stopMessagePolling();
+            await fetch(`${CONFIG.API_BASE_URL}/emails/${CONFIG.API_KEY}/${AppState.currentEmail}`, { method: 'DELETE' });
+            AppState.currentEmail = null;
+            AppState.currentDomain = null;
+            AppState.messageList = [];
+            localStorage.removeItem('tempEmail');
+            hideEmailAddress();
+            displayMessageList();
+            Utils.showToast('Email deleted');
+        }
+        
+        function copyEmailToClipboard() {
+            if (!AppState.currentEmail) return;
+            navigator.clipboard.writeText(AppState.currentEmail).then(() => Utils.showToast('Copied!')).catch(() => {
+                const ta = document.createElement('textarea'); ta.value = AppState.currentEmail;
+                document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+                document.body.removeChild(ta); Utils.showToast('Copied!');
+            });
+        }
+        
+        function displayEmailAddress() {
+            document.getElementById('emailSection').style.display = 'block';
+            document.getElementById('emailText').textContent = AppState.currentEmail;
+            document.getElementById('deleteBtn').style.display = 'block';
+            document.getElementById('customEmailSection').style.display = 'none';
+            document.getElementById('toggleCustomBtn').style.display = 'block';
+            
+            if (AppState.currentDomain) {
+                const select = document.getElementById('domainSelect');
+                for (let i = 0; i < select.options.length; i++) {
+                    if (select.options[i].value === AppState.currentDomain) { select.selectedIndex = i; break; }
+                }
+            }
+            updateChangeDomainButton();
+        }
+        
+        function hideEmailAddress() {
+            document.getElementById('emailSection').style.display = 'none';
+            document.getElementById('deleteBtn').style.display = 'none';
+            document.getElementById('toggleCustomBtn').style.display = 'none';
+            document.getElementById('customEmailSection').style.display = 'block';
+        }
+        
+        // ==========================================
+        // MESSAGES
+        // ==========================================
+        async function fetchMessages() {
+            try {
+                const r = await fetch(`${CONFIG.API_BASE_URL}/messages/${CONFIG.API_KEY}/${encodeURIComponent(AppState.currentEmail)}`, { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
+                if (r.ok) { const d = await r.json(); if (d.status && Array.isArray(d.messages)) return d.messages; }
+            } catch(e) {}
+            try {
+                const f = new FormData(); f.append('email', AppState.currentEmail);
+                const r = await fetch('https://tempmail44.com/get_messages', { method: 'POST', body: f, cache: 'no-store' });
+                const d = await r.json(); return d.messages || d.data?.messages || [];
+            } catch(e) { return []; }
+        }
+        
+        async function fetchMessageContent(hash) {
+            try {
+                const r = await fetch(`https://tempmail44.com/view/${hash}`, { cache: 'no-store' });
+                if (r.ok) {
+                    const html = await r.text();
+                    const doc = new DOMParser().parseFromString(html, 'text/html');
+                    let subject = '', from = '', body = '';
+                    const h1 = doc.querySelector('h1'), h2 = doc.querySelector('h2'), titleEl = doc.querySelector('title');
+                    if (h1) subject = h1.textContent.trim();
+                    else if (h2) subject = h2.textContent.trim();
+                    else if (titleEl) subject = titleEl.textContent.replace('TempMail44', '').replace(' - ', '').trim();
+                    const fromEl = doc.querySelector('[class*="from"], [class*="sender"]');
+                    if (fromEl) from = fromEl.textContent.trim();
+                    const selectors = ['.message-body', '.email-body', '.body', '.content', '.message-content', 'article', 'main', '.view-message', '[class*="message"]', '[class*="body"]', '[class*="content"]', '.container', '.wrapper', '#content', '#message'];
+                    for (const s of selectors) { const el = doc.querySelector(s); if (el && el.textContent.trim().length > 10) { body = el.innerHTML; break; } }
+                    if (!body || body.length < 10) { doc.querySelectorAll('script, style, nav, header, footer, .header, .footer, .nav').forEach(el => el.remove()); body = doc.body?.innerHTML || html; }
+                    body = body.replace(/<a /g, '<a target="_blank" rel="noopener noreferrer" ');
+                    return { subject: subject || 'No Subject', from: from || 'Unknown', body: body || html };
+                }
+            } catch(e) {}
+            return null;
+        }
+        
+        async function handleRefreshMessages() {
+            const b = document.getElementById('refreshBtn');
+            b.disabled = true; b.innerHTML = '<span class="spinner"></span> Refreshing...';
+            await loadAndDisplayMessages();
+            b.disabled = false; b.innerHTML = '🔄 Refresh';
+        }
+        
+        async function loadAndDisplayMessages() {
+            if (!AppState.currentEmail) { displayMessageList(); return; }
+            document.getElementById('messageList').innerHTML = '<div class="text-center" style="padding:30px"><div class="spinner"></div><p style="color:#94a3b8;">Loading...</p></div>';
+            try { AppState.messageList = await fetchMessages(); displayMessageList(); } catch(e) { document.getElementById('messageList').innerHTML = '<div class="card empty-state"><div class="empty-state-icon">❌</div><p>Failed to load</p></div>'; }
+        }
+        
+        function displayMessageList() {
+            const l = document.getElementById('messageList');
+            if (!AppState.currentEmail) { l.innerHTML = '<div class="card empty-state"><div class="empty-state-icon">📭</div><p>Create a temporary email address to start receiving messages</p></div>'; return; }
+            if (!AppState.messageList || !AppState.messageList.length) { l.innerHTML = '<div class="card empty-state"><div class="empty-state-icon">📭</div><p>No messages yet. Waiting for incoming emails...</p></div>'; return; }
+            AppState.messageList.sort((a,b) => new Date(b.time||b.created_at||0) - new Date(a.time||a.created_at||0));
+            l.innerHTML = '';
+            AppState.messageList.forEach(m => {
+                const h = m.hash || m.id || '';
+                const c = document.createElement('div'); c.className = 'card';
+                c.innerHTML = `<span class="date">${Utils.formatRelativeDate(m.time||m.created_at)}</span><div class="subject">${Utils.sanitizeHTML(Utils.safeString(m.subject)||'No Subject')}</div><div class="from">👤 ${Utils.sanitizeHTML(Utils.safeString(m.from||m.from_email)||'Unknown')}</div><div class="action-row"><button class="btn btn-sm view-btn" data-hash="${Utils.sanitizeHTML(h)}">📖 View</button><button class="btn btn-sm btn-danger delete-btn" data-hash="${Utils.sanitizeHTML(h)}">🗑️ Delete</button></div>`;
+                l.appendChild(c);
+            });
+            document.querySelectorAll('.view-btn').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); openMessageInModal(b.dataset.hash); }));
+            document.querySelectorAll('.delete-btn').forEach(b => b.addEventListener('click', async e => { e.stopPropagation(); await handleDeleteMessage(b.dataset.hash); }));
+        }
+        
+        async function openMessageInModal(hash) {
+            if (!hash) return;
+            AppState.currentMessageHash = hash;
+            document.getElementById('modalSubject').textContent = 'Loading...';
+            document.getElementById('modalMeta').innerHTML = '';
+            document.getElementById('modalBody').innerHTML = '<div class="text-center" style="padding:40px; color:#64748b;"><div class="spinner"></div><p style="margin-top:12px;">Loading message content...</p></div>';
+            document.getElementById('messageModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            const cached = AppState.messageList.find(m => (m.hash||m.id) === hash);
+            if (cached) {
+                document.getElementById('modalSubject').textContent = Utils.safeString(cached.subject)||'No Subject';
+                document.getElementById('modalMeta').innerHTML = `<div>👤 <strong>From:</strong> ${Utils.sanitizeHTML(Utils.safeString(cached.from||cached.from_email)||'Unknown')}</div><div>🕒 <strong>Date:</strong> ${Utils.formatFullDate(cached.time||cached.created_at)}</div>`;
+            }
+            
+            const full = await fetchMessageContent(hash);
+            if (AppState.currentMessageHash === hash && full) {
+                if (full.subject) document.getElementById('modalSubject').textContent = full.subject;
+                document.getElementById('modalMeta').innerHTML = `<div>👤 <strong>From:</strong> ${Utils.sanitizeHTML(full.from||'Unknown')}</div>`;
+                document.getElementById('modalBody').innerHTML = (full.body?.length > 10) ? full.body : '<div class="empty-state" style="color:#64748b;"><p>📭 No content</p></div>';
+            }
+        }
+        
+        async function handleDeleteMessage(hash) {
+            if (!hash || !confirm('Delete this message?')) return;
+            await fetch(`${CONFIG.API_BASE_URL}/messages/${CONFIG.API_KEY}/${hash}`, { method: 'DELETE' });
+            AppState.messageList = AppState.messageList.filter(m => (m.hash||m.id) !== hash);
+            displayMessageList(); Utils.showToast('Deleted');
+        }
+        
+        async function handleDeleteCurrentMessage() { if (AppState.currentMessageHash) { await handleDeleteMessage(AppState.currentMessageHash); closeMessageModal(); } }
+        function closeMessageModal() { document.getElementById('messageModal').classList.remove('active'); AppState.currentMessageHash = null; document.body.style.overflow = ''; }
+        function handleModalOverlayClick(e) { if (e.target === document.getElementById('messageModal')) closeMessageModal(); }
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('messageModal').classList.contains('active')) closeMessageModal();
+        });
+        
+        function startMessagePolling() { stopMessagePolling(); loadAndDisplayMessages(); AppState.pollInterval = setInterval(() => { if (AppState.currentEmail) loadAndDisplayMessages(); }, CONFIG.POLL_INTERVAL); }
+        function stopMessagePolling() { if (AppState.pollInterval) { clearInterval(AppState.pollInterval); AppState.pollInterval = null; } }
+        
+        function setupCustomUsernameHandler() {
+            const usernameInput = document.getElementById('customUsername');
+            if (usernameInput) {
+                usernameInput.addEventListener('input', () => updateCustomCreateButton());
+                usernameInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && !document.getElementById('createCustomBtn').disabled) handleCreateCustomEmailDirect();
+                });
+            }
+        }
+        
+        function initializeApp() {
+            // NO ADSGRAM INITIALIZATION
+            loadDomains();
+            setupCustomUsernameHandler();
+            setInterval(loadDomains, 300000);
+            
+            // Expose direct functions to window
+            window.handleCreateEmailDirect = handleCreateEmailDirect;
+            window.handleDeleteEmail = handleDeleteEmail;
+            window.copyEmailToClipboard = copyEmailToClipboard;
+            window.handleRefreshMessages = handleRefreshMessages;
+            window.handleDeleteCurrentMessage = handleDeleteCurrentMessage;
+            window.closeMessageModal = closeMessageModal;
+            window.handleModalOverlayClick = handleModalOverlayClick;
+            window.handleChangeDomainDirect = handleChangeDomainDirect;
+            window.handleCreateCustomEmailDirect = handleCreateCustomEmailDirect;
+            window.toggleCustomSection = toggleCustomSection;
+            
+            if (AppState.currentEmail) { displayEmailAddress(); startMessagePolling(); }
+            else { hideEmailAddress(); loadAndDisplayMessages(); }
+        }
+        
+        initializeApp();
+    </script>
+</body>
+</html>
