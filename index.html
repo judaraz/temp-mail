@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <link rel="preconnect" href="https://sad.adsgram.ai">
+    <link rel="preconnect" href="https://tempmail44.com">
+    <link rel="dns-prefetch" href="https://sad.adsgram.ai">
+    <link rel="dns-prefetch" href="https://tempmail44.com">
+    <link rel="preload" href="https://sad.adsgram.ai/js/sad.min.js" as="script">
+    
+    <title>TempMail - Free Temporary Email Service | Disposable Email Address</title>
+    <meta name="description" content="Create free temporary email addresses instantly. Protect your privacy with disposable email. No registration required.">
+    <meta name="theme-color" content="#0a0e27">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0a0e27;
+            color: #ffffff;
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding: 16px;
+            padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+            line-height: 1.6;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        h2 { font-size: 24px; font-weight: 700; margin-bottom: 4px; background: linear-gradient(135deg, #6366f1, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        h3 { font-size: 18px; font-weight: 600; }
+        .subtitle { color: #94a3b8; font-size: 13px; margin-bottom: 16px; }
+        
+        .card { background: #131837; padding: 16px; margin: 10px 0; border-radius: 12px; border: 1px solid #2d3454; transition: border-color 0.2s ease; }
+        .card:hover { border-color: #4f46e5; }
+        
+        .btn { background: #4f46e5; color: #ffffff; border: none; padding: 12px 18px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn:hover:not(:disabled) { background: #6366f1; transform: translateY(-1px); }
+        .btn:active:not(:disabled) { transform: translateY(0); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-danger { background: #ef4444; }
+        .btn-danger:hover:not(:disabled) { background: #dc2626; }
+        .btn-green { background: #10b981; }
+        .btn-green:hover:not(:disabled) { background: #059669; }
+        .btn-sm { padding: 6px 14px; font-size: 13px; width: auto; }
+        .btn-full { width: 100%; }
+        
+        .email-address { color: #6366f1; font-weight: 600; word-break: break-all; font-size: 15px; flex: 1; }
+        .email-container { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .label { font-size: 11px; text-transform: uppercase; color: #94a3b8; letter-spacing: 1px; font-weight: 600; }
+        
+        .subject { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
+        .from { font-size: 13px; color: #94a3b8; margin: 4px 0 8px; }
+        .date { font-size: 11px; color: #64748b; float: right; }
+        .action-row { display: flex; gap: 8px; margin-top: 10px; }
+        
+        .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(79, 70, 229, 0.1); border-top-color: #4f46e5; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(8px); display: none; align-items: stretch; justify-content: center; z-index: 1000; padding: 0; }
+        .modal-overlay.active { display: flex; }
+        
+        .modal-container { background: #131837; width: 100%; height: 100%; height: 100dvh; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        
+        @media (min-width: 768px) {
+            .modal-overlay { padding: 20px; align-items: center; }
+            .modal-container { width: 95%; height: auto; max-width: 1200px; max-height: 90vh; max-height: 90dvh; border-radius: 14px; border: 1px solid #2d3454; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); }
+        }
+        
+        .modal-header { flex-shrink: 0; padding: 12px 16px; padding-top: calc(12px + env(safe-area-inset-top, 0px)); border-bottom: 1px solid #2d3454; background: #0f132a; position: relative; }
+        .modal-header h3 { margin: 0 0 4px; font-size: 16px; word-break: break-word; padding-right: 40px; color: #e2e8f0; line-height: 1.3; }
+        .modal-meta { font-size: 11px; color: #94a3b8; line-height: 1.5; }
+        .modal-meta strong { color: #cbd5e1; }
+        
+        .modal-body { flex: 1 1 auto; background: #ffffff; padding: 16px 18px; word-break: break-word; line-height: 1.55; font-size: 15px; overflow-y: auto; overflow-x: hidden; color: #1a1a1a; -webkit-overflow-scrolling: touch; min-height: 0; }
+        .modal-body > *:first-child { margin-top: 0 !important; }
+        .modal-body > *:last-child { margin-bottom: 0 !important; padding-bottom: 0 !important; }
+        .modal-body p:empty, .modal-body div:empty, .modal-body span:empty { display: none !important; }
+        .modal-body img { max-width: 100%; height: auto; border-radius: 6px; display: block; }
+        .modal-body a { color: #4f46e5; word-break: break-all; text-decoration: underline; }
+        .modal-body pre, .modal-body code { white-space: pre-wrap; word-break: break-word; background: #f1f5f9; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; color: #1a1a1a; font-size: 13px; line-height: 1.5; padding: 8px 10px; border-radius: 6px; overflow-x: auto; }
+        .modal-body p { margin: 0 0 10px 0; }
+        .modal-body h1, .modal-body h2, .modal-body h3, .modal-body h4 { margin: 12px 0 8px 0; line-height: 1.3; color: #0f172a; }
+        .modal-body ul, .modal-body ol { margin: 0 0 10px 18px; padding: 0; }
+        .modal-body table { max-width: 100%; border-collapse: collapse; }
+        .modal-body td, .modal-body th { padding: 4px 6px; }
+        .modal-body [style*="color:#fff"], .modal-body [style*="color: #fff"], .modal-body [style*="color:white"], .modal-body [style*="color: white"] { color: #1a1a1a !important; }
+        
+        .modal-footer { flex-shrink: 0; padding: 10px 16px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid #2d3454; display: flex; justify-content: flex-end; gap: 8px; background: #0f132a; }
+        
+        .modal-close { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; font-size: 18px; cursor: pointer; padding: 0; line-height: 1; transition: all 0.2s; position: absolute; top: calc(10px + env(safe-area-inset-top, 0px)); right: 10px; border-radius: 6px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; z-index: 10; }
+        .modal-close:hover { background: rgba(239, 68, 68, 0.25); border-color: #ef4444; }
+        
+        .toast { position: fixed; top: calc(20px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); background: #10b981; color: #ffffff; padding: 12px 24px; border-radius: 24px; font-size: 13px; font-weight: 500; z-index: 2000; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3); animation: toastIn 0.3s ease, toastOut 0.3s ease 2s forwards; max-width: 90%; text-align: center; }
+        .toast.error { background: #ef4444; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3); }
+        .toast.info { background: #3b82f6; box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3); }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(-20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+        @keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateX(-50%) translateY(-20px); } }
+        
+        .flex { display: flex; }
+        .flex-between { justify-content: space-between; align-items: center; }
+        .flex-center { justify-content: center; align-items: center; }
+        .gap-3 { gap: 12px; }
+        .mt-2 { margin-top: 8px; }
+        .mt-3 { margin-top: 12px; }
+        .mt-4 { margin-top: 16px; }
+        .text-center { text-align: center; }
+        .relative { position: relative; }
+        
+        .copy-btn { background: #1e293b; border: 1px solid #334155; color: #ffffff; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 18px; transition: all 0.2s; flex-shrink: 0; }
+        .copy-btn:hover { background: #334155; border-color: #4f46e5; }
+        
+        .empty-state { color: #64748b; padding: 40px 20px; text-align: center; }
+        .empty-state-icon { font-size: 48px; margin-bottom: 12px; }
+        
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin: 16px 0; }
+        .feature-item { background: #131837; border: 1px solid #2d3454; border-radius: 8px; padding: 12px; text-align: center; font-size: 12px; color: #94a3b8; }
+        .feature-icon { font-size: 24px; margin-bottom: 4px; }
+        
+        .custom-email-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .custom-email-input { background: #1e293b; border: 1px solid #334155; color: #ffffff; padding: 8px 12px; border-radius: 8px; font-size: 14px; flex: 1; min-width: 120px; }
+        .custom-email-input:focus { outline: none; border-color: #4f46e5; }
+        .custom-email-input::placeholder { color: #64748b; }
+        .custom-email-separator { color: #94a3b8; font-size: 18px; font-weight: 600; }
+        .domain-select { background: #1e293b; border: 1px solid #334155; color: #ffffff; padding: 8px 12px; border-radius: 8px; font-size: 14px; cursor: pointer; min-width: 130px; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+        .domain-select:focus { outline: none; border-color: #4f46e5; }
+        .domain-select option { background: #131837; color: #ffffff; }
+        .create-custom-btn { background: #10b981; color: #ffffff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; white-space: nowrap; transition: all 0.2s ease; }
+        .create-custom-btn:hover:not(:disabled) { background: #059669; transform: translateY(-1px); }
+        .create-custom-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .domain-selector { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+        .change-domain-btn { background: #6366f1; color: #ffffff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; white-space: nowrap; transition: all 0.2s ease; }
+        .change-domain-btn:hover:not(:disabled) { background: #818cf8; transform: translateY(-1px); }
+        .change-domain-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .domain-label { font-size: 12px; color: #94a3b8; margin-top: 12px; margin-bottom: 4px; }
+        .toggle-custom-btn { background: none; border: 1px solid #334155; color: #94a3b8; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s; margin-top: 8px; }
+        .toggle-custom-btn:hover { border-color: #6366f1; color: #6366f1; }
+
+        @media (max-width: 400px) {
+            .custom-email-row { flex-direction: column; }
+            .custom-email-separator { display: none; }
+            .domain-select { width: 100%; }
+            .create-custom-btn { width: 100%; }
+        }
+        
+        #adConsentOverlay .ad-consent-box { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 24px; max-width: 350px; width: 100%; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        #adConsentOverlay .consent-title { color: #fff; margin-bottom: 10px; font-size: 18px; font-weight: 700; }
+        #adConsentOverlay .consent-text { color: #94a3b8; font-size: 13px; margin-bottom: 20px; line-height: 1.6; }
+        .consent-btn-yes { background: #4f46e5; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 600; width: 100%; transition: background 0.2s; }
+        .consent-btn-yes:hover { background: #6366f1; }
+        .consent-btn-later { background: #334155; color: #94a3b8; border: 1px solid #475569; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; width: 100%; margin-top: 10px; transition: all 0.2s; }
+        .consent-btn-later:hover { background: #475569; color: #cbd5e1; }
+
+        .bottom-nav { position: fixed; left: 0; right: 0; bottom: 0; background: #0f132a; border-top: 1px solid #2d3454; display: flex; justify-content: space-around; align-items: center; padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0px)); z-index: 500; box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4); }
+        .bottom-nav .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 4px; cursor: pointer; border: none; background: none; color: #94a3b8; font-size: 11px; font-weight: 500; transition: color 0.2s, transform 0.15s; -webkit-tap-highlight-color: transparent; }
+        .bottom-nav .nav-item .nav-icon { font-size: 22px; line-height: 1; }
+        .bottom-nav .nav-item.active { color: #6366f1; }
+        .bottom-nav .nav-item.active .nav-icon { transform: translateY(-2px); }
+        .bottom-nav .nav-item:active { transform: scale(0.94); }
+
+        .view { display: none; }
+        .view.active { display: block; }
+
+        .refer-code-box { background: linear-gradient(135deg, #4f46e5, #8b5cf6); padding: 16px; border-radius: 10px; text-align: center; margin: 12px 0; }
+        .refer-code-label { font-size: 11px; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px; }
+        .refer-code-value { font-size: 15px; font-weight: 700; margin: 6px 0 10px; word-break: break-all; font-family: ui-monospace, monospace; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+        .stat-tile { background: #0f132a; padding: 12px; border-radius: 8px; text-align: center; border: 1px solid #2d3454; }
+        .stat-value { font-size: 24px; font-weight: 700; color: #6366f1; }
+        .stat-value.green { color: #10b981; }
+        .stat-tile-label { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+        .balance-card { background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 16px; border-radius: 10px; margin: 12px 0; text-align: center; }
+        .balance-label { font-size: 11px; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px; }
+        .balance-value { font-size: 28px; font-weight: 700; margin: 4px 0; }
+        .balance-sub { font-size: 11px; opacity: 0.75; }
+
+        .ad-progress { background: #0f132a; padding: 14px; border-radius: 10px; text-align: center; margin: 12px 0; border: 1px solid #2d3454; }
+        .ad-progress-count { font-size: 28px; font-weight: 700; color: #6366f1; }
+        .ad-progress-label { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .wallet-input { width: 100%; padding: 12px; background: #0f132a; border: 1px solid #334155; border-radius: 8px; color: #fff; font-size: 14px; margin-top: 8px; }
+        .wallet-input:focus { outline: none; border-color: #4f46e5; }
+        .wallet-input::placeholder { color: #64748b; }
+
+        .info-box { background: #131837; padding: 14px; border-radius: 10px; border-left: 3px solid #6366f1; margin: 12px 0; font-size: 13px; color: #cbd5e1; line-height: 1.6; }
+
+        /* ===== Welcome Popup ===== */
+        .promo-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 5000;
+            padding: 20px;
+            animation: fadeIn 0.25s ease;
+        }
+        .promo-overlay.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .promo-box {
+            position: relative;
+            background: linear-gradient(135deg, #1e293b, #131837);
+            border: 1px solid #4f46e5;
+            border-radius: 16px;
+            max-width: 420px;
+            width: 100%;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(79, 70, 229, 0.4);
+            animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.85); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .promo-close {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.9);
+            color: #ffffff;
+            border: none;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5);
+        }
+        .promo-close:active { transform: scale(0.9); }
+        .promo-img {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            display: block;
+            background: #0a0e27;
+        }
+        .promo-text {
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffffff;
+            line-height: 1.5;
+            padding: 4px 8px 8px;
+        }
+        .promo-text .highlight {
+            background: linear-gradient(135deg, #10b981, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+        .promo-progress {
+            height: 3px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+        .promo-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            width: 100%;
+            animation: promoCountdown 5s linear forwards;
+        }
+        @keyframes promoCountdown {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- MAIL VIEW -->
+    <div id="view-mail" class="view active">
+        <header>
+            <h2>📧 TempMail44</h2>
+            <p class="subtitle">Free Temporary Email • Protect Your Privacy</p>
+        </header>
+        
+        <div class="features">
+            <div class="feature-item"><div class="feature-icon">🚀</div><div>Instant Setup</div></div>
+            <div class="feature-item"><div class="feature-icon">🔒</div><div>Privacy Protected</div></div>
+            <div class="feature-item"><div class="feature-icon">📧</div><div>Spam Protection</div></div>
+            <div class="feature-item"><div class="feature-icon">⚡</div><div>Auto Refresh</div></div>
+        </div>
+        
+        <section id="customEmailSection" class="card" style="display: block;">
+            <div class="label">✏️ Create Custom Email</div>
+            <div class="custom-email-row mt-2">
+                <input type="text" id="customUsername" class="custom-email-input" placeholder="Enter username" maxlength="30" autocomplete="off">
+                <span class="custom-email-separator">@</span>
+                <select id="customDomainSelect" class="domain-select"><option value="">Loading...</option></select>
+                <button id="createCustomBtn" class="create-custom-btn" onclick="handleCreateCustomEmail()" disabled>✨ Create</button>
+            </div>
+            <button class="toggle-custom-btn" onclick="toggleCustomSection()" style="display: none;" id="toggleCustomBtn">✏️ Create Custom Email Instead</button>
+        </section>
+        
+        <section id="emailSection" class="card" style="display: none;">
+            <div class="label">Your Temporary Email Address</div>
+            <div class="email-container mt-2">
+                <span id="emailText" class="email-address"></span>
+                <button class="copy-btn" onclick="copyEmailToClipboard()" title="Copy temporary email address">📋</button>
+            </div>
+            <div class="domain-label">🔄 Change Domain</div>
+            <div class="domain-selector">
+                <select id="domainSelect" class="domain-select"><option value="">Loading domains...</option></select>
+                <button id="changeDomainBtn" class="change-domain-btn" onclick="handleChangeDomain()" disabled>🔄 Change</button>
+            </div>
+        </section>
+        
+        <div class="flex gap-3 mt-3">
+            <button class="btn btn-full" onclick="handleCreateEmail()" id="createBtn">📨 Generate Random Email</button>
+            <button class="btn btn-danger btn-full" onclick="handleDeleteEmail()" id="deleteBtn" style="display: none;">🗑️ Delete Email</button>
+        </div>
+        
+        <div class="flex flex-between mt-4">
+            <h3>📥 Inbox</h3>
+            <button class="btn btn-sm" onclick="handleRefreshMessages()" id="refreshBtn">🔄 Refresh</button>
+        </div>
+        <div id="messageList"></div>
+        
+        <footer style="margin-top: 30px; padding: 20px 0; border-top: 1px solid #2d3454; text-align: center; color: #64748b; font-size: 12px;">
+            <p>TempMail44 - Free Temporary Email Service | Protect Your Privacy Online</p>
+        </footer>
+    </div>
+    
+    <!-- REFER VIEW -->
+    <div id="view-refer" class="view">
+        <header>
+            <h2>🎁 Refer & Earn</h2>
+            <p class="subtitle">Invite friends, earn USDT rewards</p>
+        </header>
+        
+        <div id="referContent">
+            <div class="text-center" style="padding:40px 20px;">
+                <div class="spinner"></div>
+                <p style="color:#94a3b8; margin-top:12px;">Loading referral data...</p>
+            </div>
+        </div>
+        
+        <div class="info-box" style="margin-top:16px;">
+            <b>💡 How it works:</b><br>
+            • Share your referral link with friends<br>
+            • They must generate 10+ emails over 5 consecutive days<br>
+            • You earn <b id="rewardAmountInfo">$0.10</b> USDT per qualified referral<br>
+            • Max 2 referred accounts per device
+        </div>
+    </div>
+    
+    <!-- WITHDRAW VIEW -->
+    <div id="view-withdraw" class="view">
+        <header>
+            <h2>💸 Withdraw</h2>
+            <p class="subtitle">Cash out to your Binance account</p>
+        </header>
+        
+        <div id="withdrawContent">
+            <div class="text-center" style="padding:40px 20px;">
+                <div class="spinner"></div>
+                <p style="color:#94a3b8; margin-top:12px;">Loading...</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Ad Consent Modal -->
+    <div id="adConsentOverlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 3000; padding: 20px;">
+        <div class="ad-consent-box">
+            <h3 class="consent-title">📺 Watch an Ad?</h3>
+            <p class="consent-text">Support TempMail44 by watching a short ad. This helps us keep the service free for everyone!</p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button onclick="acceptAd()" class="consent-btn-yes">✅ Yes, Watch Ad</button>
+                <button onclick="declineAd()" class="consent-btn-later">⏭️ Maybe Later</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ===== Welcome Promo Popup ===== -->
+    <div class="promo-overlay" id="promoOverlay">
+        <div class="promo-box">
+            <button class="promo-close" onclick="closePromo()" aria-label="Close">✕</button>
+            <img class="promo-img" src="https://i.postimg.cc/sxgYv5y8/grok-1789674170825.jpg" alt="Earn $100 per day" onerror="this.style.display='none';">
+            <div class="promo-text">
+                You can earn <span class="highlight">$100 per day</span> by referral program.<br>
+                Share your link with friends.
+            </div>
+            <div class="promo-progress"><div class="promo-progress-bar"></div></div>
+        </div>
+    </div>
+    
+    <div id="messageModal" class="modal-overlay" onclick="handleModalOverlayClick(event)">
+        <div class="modal-container relative">
+            <button class="modal-close" onclick="closeMessageModal()" aria-label="Close modal">✕</button>
+            <div class="modal-header">
+                <h3 id="modalSubject">Loading...</h3>
+                <div id="modalMeta" class="modal-meta"></div>
+            </div>
+            <div id="modalBody" class="modal-body">
+                <div style="text-align:center;padding:20px;color:#64748b;">
+                    <div class="spinner"></div>
+                    <p style="margin-top:12px;">Loading message content...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-sm btn-danger" onclick="handleDeleteCurrentMessage()">🗑️ Delete</button>
+                <button class="btn btn-sm" onclick="closeMessageModal()">✕ Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-view="mail" onclick="switchView('mail')">
+            <span class="nav-icon">📧</span>
+            <span>Mail</span>
+        </button>
+        <button class="nav-item" data-view="refer" onclick="switchView('refer')">
+            <span class="nav-icon">🎁</span>
+            <span>Refer</span>
+        </button>
+        <button class="nav-item" data-view="withdraw" onclick="switchView('withdraw')">
+            <span class="nav-icon">💸</span>
+            <span>Withdraw</span>
+        </button>
+    </nav>
+
+    <script async src="https://sad.adsgram.ai/js/sad.min.js" onload="onAdsGramLoaded()"></script>
+
+    <script>
+        (function() {
+            const isTelegramMiniApp = !!window.Telegram?.WebApp;
+            if (isTelegramMiniApp) {
+                const sessionKey = 'tempmail_session';
+                const lastSession = localStorage.getItem(sessionKey);
+                if (lastSession !== 'active') localStorage.removeItem('tempEmail');
+                localStorage.setItem(sessionKey, 'active');
+                sessionStorage.setItem(sessionKey, 'active');
+            }
+        })();
+        
+        const CONFIG = {
+            API_BASE_URL: 'https://tempmail44.com/api',
+            PUBLIC_API: 'https://tempmail44.com/public/api',
+            API_KEY: 'j4yxeNxwQMiuK2guugffuBtcBylQYvb',
+            POLL_INTERVAL: 8000,
+
+            // AdsGram block IDs
+            ADSGRAM_REWARD_BLOCK:  '49190',
+            ADSGRAM_INTERSTITIAL_YES: 'int-49189',
+            ADSGRAM_INTERSTITIAL_LATER: 'int-49189',
+
+            // Promo popup
+            PROMO_AUTO_CLOSE_MS: 5000
+        };
+        
+        const AppState = {
+            currentEmail: null,
+            messageList: [],
+            currentMessageHash: null,
+            pollInterval: null,
+            adsControllers: {},
+            availableDomains: [],
+            currentDomain: null,
+            pendingCustomUsername: null,
+            pendingCustomDomain: null,
+            pendingNewDomain: null,
+            initialized: false,
+            currentView: 'mail',
+            referStats: null,
+            chatId: null,
+            deviceFp: null,
+            adCount: 0,
+            adsRequired: 5,
+            isSubmittingWithdraw: false,
+            referralRegistered: false,
+            _withdrawTimer: null,
+            _promoTimeout: null
+        };
+        
+        // ============ ADSGRAM CONTROLLERS ============
+        function getAdController(blockId) {
+            if (!window.Adsgram) return null;
+            if (AppState.adsControllers[blockId]) return AppState.adsControllers[blockId];
+            try {
+                const c = window.Adsgram.init({ blockId: String(blockId) });
+                AppState.adsControllers[blockId] = c;
+                return c;
+            } catch (e) {
+                console.warn('Adsgram init failed for', blockId, e);
+                return null;
+            }
+        }
+        
+        function initializeAdsGram() {
+            getAdController(CONFIG.ADSGRAM_REWARD_BLOCK);
+            getAdController(CONFIG.ADSGRAM_INTERSTITIAL_YES);
+            getAdController(CONFIG.ADSGRAM_INTERSTITIAL_LATER);
+        }
+        
+        function showAdByBlockId(blockId) {
+            return new Promise((resolve) => {
+                const controller = getAdController(blockId);
+                if (!controller) { resolve({ shown: false, rewarded: false }); return; }
+
+                let rewardedFlag = false;
+                let settled = false;
+                const finish = (res) => { if (settled) return; settled = true; resolve(res); };
+
+                try {
+                    if (typeof controller.addEventListener === 'function') {
+                        try { controller.addEventListener('onReward', () => { rewardedFlag = true; }); } catch(e) {}
+                    }
+                } catch (e) {}
+
+                let promise;
+                try { promise = controller.show(); }
+                catch (e) {
+                    console.warn('[AdsGram] show threw', e);
+                    finish({ shown: false, rewarded: false });
+                    return;
+                }
+
+                Promise.race([
+                    promise,
+                    new Promise((_, rej) => setTimeout(() => rej(new Error('adsgram-timeout')), 90000))
+                ])
+                .then((result) => {
+                    if (result && typeof result === 'object' && 'done' in result) {
+                        finish({ shown: true, rewarded: result.done === true || rewardedFlag === true });
+                        return;
+                    }
+                    finish({ shown: true, rewarded: rewardedFlag === true });
+                })
+                .catch((err) => {
+                    console.warn('[AdsGram] show failed', err);
+                    finish({ shown: false, rewarded: false });
+                });
+            });
+        }
+        
+        async function showRewardWithFallback() {
+            const reward = await showAdByBlockId(CONFIG.ADSGRAM_REWARD_BLOCK);
+            if (reward.shown && reward.rewarded) {
+                return { shown: true, rewarded: true };
+            }
+            console.log('[AdsGram] Reward failed, using interstitial fallback');
+            const inter = await showAdByBlockId(CONFIG.ADSGRAM_INTERSTITIAL_YES);
+            return { shown: inter.shown, rewarded: inter.rewarded || inter.shown };
+        }
+        
+        // ============ PROMO POPUP ============
+        function showPromo() {
+            const overlay = document.getElementById('promoOverlay');
+            if (!overlay) return;
+            overlay.classList.add('active');
+            
+            // Reset progress bar animation
+            const bar = overlay.querySelector('.promo-progress-bar');
+            if (bar) {
+                bar.style.animation = 'none';
+                void bar.offsetWidth; // reflow
+                bar.style.animation = '';
+            }
+            
+            // Auto-close after 5 seconds
+            if (AppState._promoTimeout) clearTimeout(AppState._promoTimeout);
+            AppState._promoTimeout = setTimeout(() => {
+                closePromo();
+            }, CONFIG.PROMO_AUTO_CLOSE_MS);
+        }
+        
+        function closePromo() {
+            const overlay = document.getElementById('promoOverlay');
+            if (overlay) overlay.classList.remove('active');
+            if (AppState._promoTimeout) {
+                clearTimeout(AppState._promoTimeout);
+                AppState._promoTimeout = null;
+            }
+        }
+        
+        window.closePromo = closePromo;
+        
+        const Utils = {
+            showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 2300);
+            },
+            sanitizeHTML(str) { const div = document.createElement('div'); div.textContent = str; return div.innerHTML; },
+            formatRelativeDate(dateStr) {
+                if (!dateStr) return '';
+                try {
+                    const date = new Date(dateStr), now = new Date();
+                    const diffMins = Math.floor((now - date) / 60000);
+                    if (diffMins < 1) return 'Just now';
+                    if (diffMins < 60) return `${diffMins}m ago`;
+                    const diffHours = Math.floor(diffMins / 60);
+                    if (diffHours < 24) return `${diffHours}h ago`;
+                    return date.toLocaleDateString();
+                } catch (e) { return dateStr; }
+            },
+            formatFullDate(dateStr) { if (!dateStr) return ''; try { return new Date(dateStr).toLocaleString(); } catch (e) { return dateStr; } },
+            safeString(val) { return val ? String(val) : ''; },
+            isValidUsername(u) { return /^[a-zA-Z0-9._-]{3,30}$/.test(u); },
+            
+            cleanEmailBody(html) {
+                if (!html) return '';
+                let c = html;
+                c = c.replace(/<html[^>]*>/gi, '').replace(/<\/html>/gi, '');
+                c = c.replace(/<head[\s\S]*?<\/head>/gi, '');
+                c = c.replace(/<body[^>]*>/gi, '').replace(/<\/body>/gi, '');
+                c = c.replace(/<p[^>]*>\s*(?:&nbsp;|\s|<br\s*\/?>)*\s*<\/p>/gi, '');
+                c = c.replace(/<div[^>]*>\s*(?:&nbsp;|\s|<br\s*\/?>)*\s*<\/div>/gi, '');
+                c = c.replace(/<span[^>]*>\s*(?:&nbsp;|\s)*\s*<\/span>/gi, '');
+                c = c.replace(/(<br\s*\/?>\s*){3,}/gi, '<br><br>');
+                c = c.replace(/(?:<br\s*\/?>\s*|&nbsp;|\s)*$/gi, '');
+                c = c.replace(/(?:<p[^>]*>\s*<\/p>\s*)+$/gi, '');
+                c = c.replace(/(?:<div[^>]*>\s*<\/div>\s*)+$/gi, '');
+                c = c.replace(/>\s{2,}</g, '> <');
+                c = c.replace(/\n{3,}/g, '\n\n');
+                c = c.replace(/\t+/g, ' ');
+                return c.trim();
+            },
+            
+            trimModalBodyWhitespace(container) {
+                if (!container) return;
+                while (container.firstChild) {
+                    const n = container.firstChild;
+                    if (n.nodeType === 3 && !n.textContent.trim()) container.removeChild(n);
+                    else if (n.nodeType === 1) {
+                        const tag = n.tagName, text = n.textContent.trim();
+                        if ((tag === 'BR' || tag === 'P' || tag === 'DIV' || tag === 'SPAN') && text === '') container.removeChild(n);
+                        else break;
+                    } else break;
+                }
+                while (container.lastChild) {
+                    const n = container.lastChild;
+                    if (n.nodeType === 3 && !n.textContent.trim()) container.removeChild(n);
+                    else if (n.nodeType === 1) {
+                        const tag = n.tagName, text = n.textContent.trim();
+                        if ((tag === 'BR' || tag === 'P' || tag === 'DIV' || tag === 'SPAN') && text === '') container.removeChild(n);
+                        else break;
+                    } else break;
+                }
+                const last = container.lastElementChild;
+                if (last) { last.style.marginBottom = '0'; last.style.paddingBottom = '0'; }
+            }
+        };
+        
+        function onAdsGramLoaded() { initializeAdsGram(); }
+        
+        function getOrCreateDeviceFp() {
+            if (AppState.deviceFp) return AppState.deviceFp;
+            let fp = localStorage.getItem('tm44_device_fp');
+            if (!fp) {
+                const tg = window.Telegram?.WebApp?.initDataUnsafe?.user;
+                const parts = [
+                    tg?.id ? 'u' + tg.id : '',
+                    window.Telegram?.WebApp?.platform || '',
+                    navigator.language || '',
+                    screen.width + 'x' + screen.height,
+                    window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code || ''
+                ].filter(Boolean).join('|');
+                let hash = 0;
+                for (let i = 0; i < parts.length; i++) {
+                    hash = ((hash << 5) - hash + parts.charCodeAt(i)) | 0;
+                }
+                const rand = Math.random().toString(36).slice(2, 10);
+                fp = 'd' + Math.abs(hash).toString(16) + '_' + rand;
+                localStorage.setItem('tm44_device_fp', fp);
+            }
+            AppState.deviceFp = fp;
+            return fp;
+        }
+        
+        function getStartParam() {
+            let sp = window.Telegram?.WebApp?.initDataUnsafe?.start_param || '';
+            if (!sp) {
+                try {
+                    const params = new URLSearchParams(window.location.search);
+                    sp = params.get('startapp') || params.get('start') || '';
+                } catch (e) {}
+            }
+            if (!sp && window.location.hash) {
+                try {
+                    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+                    sp = hashParams.get('startapp') || hashParams.get('start') || '';
+                } catch (e) {}
+            }
+            if (sp) console.log('[Referral] start_param detected:', sp);
+            return sp;
+        }
+        
+        function getTelegramUserData() {
+            let userData = null;
+            if (window.Telegram?.WebApp) {
+                const user = window.Telegram.WebApp.initDataUnsafe?.user;
+                if (user) {
+                    userData = {
+                        chatId: user.id,
+                        firstName: user.first_name || 'User',
+                        lastName: user.last_name || '',
+                        username: user.username || '',
+                        lastActive: new Date().toISOString()
+                    };
+                }
+            }
+            if (!userData) {
+                const saved = localStorage.getItem('telegram_chat_id');
+                if (saved) {
+                    userData = {
+                        chatId: saved,
+                        firstName: localStorage.getItem('telegram_first_name') || 'User',
+                        lastName: '',
+                        username: localStorage.getItem('telegram_username') || '',
+                        lastActive: new Date().toISOString()
+                    };
+                }
+            }
+            return userData;
+        }
+        
+        async function registerCurrentUser() {
+            const userData = getTelegramUserData();
+            if (!userData || !userData.chatId) return false;
+            
+            AppState.chatId = userData.chatId;
+            localStorage.setItem('telegram_chat_id', userData.chatId);
+            localStorage.setItem('telegram_first_name', userData.firstName);
+            if (userData.username) localStorage.setItem('telegram_username', userData.username);
+            
+            try {
+                await fetch(`${CONFIG.API_BASE_URL}/register-user.php`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+            } catch (e) {}
+            
+            const startParam = getStartParam();
+            if (startParam && startParam.startsWith('ref_') && !AppState.referralRegistered) {
+                AppState.referralRegistered = true;
+                try {
+                    const r = await fetch(`${CONFIG.PUBLIC_API}/referral.php`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'register_referral',
+                            chatId: userData.chatId,
+                            referCode: startParam,
+                            deviceFp: getOrCreateDeviceFp(),
+                            firstName: userData.firstName,
+                            username: userData.username
+                        })
+                    });
+                    const d = await r.json();
+                    if (d.success) Utils.showToast('✅ Referral recorded!');
+                } catch (e) {}
+            }
+            
+            return true;
+        }
+        
+        async function apiCall(action, data = {}) {
+            const body = {
+                action,
+                chatId: AppState.chatId,
+                deviceFp: getOrCreateDeviceFp(),
+                firstName: localStorage.getItem('telegram_first_name') || '',
+                username: localStorage.getItem('telegram_username') || '',
+                ...data
+            };
+            const r = await fetch(`${CONFIG.PUBLIC_API}/referral.php?t=${Date.now()}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                },
+                body: JSON.stringify(body)
+            });
+            return await r.json();
+        }
+        
+        function switchView(viewName) {
+            AppState.currentView = viewName;
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            const el = document.getElementById('view-' + viewName);
+            if (el) el.classList.add('active');
+            
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.view === viewName);
+            });
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            if (viewName === 'refer') loadReferView();
+            if (viewName === 'withdraw') loadWithdrawView();
+        }
+        
+        async function loadReferView() {
+            const box = document.getElementById('referContent');
+            
+            if (!AppState.chatId) {
+                box.innerHTML = '<div class="info-box" style="border-left-color:#f59e0b;"><b>⚠️ Not detected inside Telegram</b><br>Refer & Earn only works inside the Telegram mini-app.</div>';
+                return;
+            }
+            
+            box.innerHTML = '<div class="text-center" style="padding:40px 20px;"><div class="spinner"></div><p style="color:#94a3b8; margin-top:12px;">Loading referral data...</p></div>';
+            
+            try {
+                const d = await apiCall('stats');
+                if (!d || !d.success) {
+                    box.innerHTML = `<div class="info-box" style="border-left-color:#ef4444;"><b>❌ Backend error</b><br>${d && d.error ? Utils.sanitizeHTML(d.error) : 'No response'}</div>`;
+                    return;
+                }
+                AppState.referStats = d;
+                
+                const botUser = d.bot_username || 'tempmailguru_bot';
+                const shareLink = `https://t.me/${botUser}?start=${encodeURIComponent(d.refer_code)}`;
+                
+                box.innerHTML = `
+                    <div class="refer-code-box">
+                        <div class="refer-code-label">Your Referral Code</div>
+                        <div class="refer-code-value">${Utils.sanitizeHTML(d.refer_code)}</div>
+                        <div style="display:flex; gap:8px; margin-top:4px;">
+                            <button class="btn btn-full" style="background:rgba(255,255,255,0.2);" onclick="shareReferral()">📤 Share</button>
+                            <button class="btn btn-full" style="background:rgba(255,255,255,0.2);" onclick="copyReferLink()">📋 Copy</button>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-grid">
+                        <div class="stat-tile"><div class="stat-value">${d.total_referrals}</div><div class="stat-tile-label">Invited</div></div>
+                        <div class="stat-tile"><div class="stat-value green">${d.qualified_referrals}</div><div class="stat-tile-label">Qualified</div></div>
+                    </div>
+                    
+                    <div class="balance-card">
+                        <div class="balance-label">Your Balance</div>
+                        <div class="balance-value">$${parseFloat(d.balance_usdt).toFixed(2)}</div>
+                        <div class="balance-sub">USDT • $${parseFloat(d.reward_usdt).toFixed(2)} per qualified referral</div>
+                    </div>
+                    
+                    <button class="btn btn-full mt-3" onclick="shareReferral()">📤 Share Referral Link</button>
+                    
+                    <div class="info-box mt-3" style="font-size:12px; word-break:break-all;">
+                        <b>Your link:</b><br>
+                        <span style="color:#818cf8;">${Utils.sanitizeHTML(shareLink)}</span>
+                    </div>
+                `;
+                document.getElementById('rewardAmountInfo').textContent = '$' + parseFloat(d.reward_usdt).toFixed(2);
+            } catch (e) {
+                box.innerHTML = `<div class="info-box" style="border-left-color:#ef4444;"><b>❌ Connection failed</b><br>${Utils.sanitizeHTML(e.message)}</div>`;
+            }
+        }
+        
+        function shareReferral() {
+            if (!AppState.referStats) return;
+            const botUser = AppState.referStats.bot_username || 'tempmailguru_bot';
+            const link = `https://t.me/${botUser}?start=${encodeURIComponent(AppState.referStats.refer_code)}`;
+            const text = 'Get a free temp email + earn USDT! Join TempMail44:';
+            if (window.Telegram?.WebApp) {
+                window.Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`);
+            } else {
+                navigator.clipboard.writeText(link).then(() => Utils.showToast('Link copied!'));
+            }
+        }
+        
+        function copyReferLink() {
+            if (!AppState.referStats) return;
+            const botUser = AppState.referStats.bot_username || 'tempmailguru_bot';
+            const link = `https://t.me/${botUser}?start=${encodeURIComponent(AppState.referStats.refer_code)}`;
+            navigator.clipboard.writeText(link).then(() => Utils.showToast('Link copied!')).catch(() => Utils.showToast('Copy failed', 'error'));
+        }
+        
+        window.shareReferral = shareReferral;
+        window.copyReferLink = copyReferLink;
+        
+        async function loadWithdrawView() {
+            const box = document.getElementById('withdrawContent');
+            
+            if (!AppState.chatId) {
+                box.innerHTML = '<div class="info-box" style="border-left-color:#f59e0b;"><b>⚠️ Not detected inside Telegram</b><br>Withdraw only works inside the Telegram mini-app.</div>';
+                return;
+            }
+            
+            box.innerHTML = '<div class="text-center" style="padding:40px 20px;"><div class="spinner"></div><p style="color:#94a3b8; margin-top:12px;">Loading...</p></div>';
+            
+            try {
+                const stats = await apiCall('stats');
+                if (!stats || !stats.success) {
+                    box.innerHTML = `<div class="info-box" style="border-left-color:#ef4444;"><b>❌ Backend error</b><br>${stats && stats.error ? Utils.sanitizeHTML(stats.error) : 'No response'}</div>`;
+                    return;
+                }
+                
+                const balance = parseFloat(stats.balance_usdt || 0);
+                const minW = parseFloat(stats.min_withdraw || 0.10);
+                const canWithdraw = balance >= minW;
+                
+                let adCount = 0;
+                try {
+                    const adStatus = await apiCall('withdraw_status');
+                    adCount = adStatus.ad_count || 0;
+                } catch(e) { adCount = 0; }
+                
+                AppState.adCount = adCount;
+                const adsNeeded = AppState.adsRequired;
+                const adsComplete = adCount >= adsNeeded;
+                
+                box.innerHTML = `
+                    <div class="balance-card">
+                        <div class="balance-label">Available Balance</div>
+                        <div class="balance-value">$${balance.toFixed(2)}</div>
+                        <div class="balance-sub">USDT • Min withdrawal: $${minW.toFixed(2)}</div>
+                    </div>
+                    
+                    <div class="ad-progress">
+                        <div class="ad-progress-count">${adCount} / ${adsNeeded}</div>
+                        <div class="ad-progress-label">Ads Watched</div>
+                    </div>
+                    
+                    ${!adsComplete ? `
+                        <button class="btn btn-full" id="watchAdBtn" onclick="watchWithdrawAd()">📺 Watch Ad (${adCount}/${adsNeeded})</button>
+                        <div style="font-size: 11px; color: #94a3b8; text-align: center; margin-top: 8px;">
+                            ⚠️ Reward ad required — must be watched <b>completely</b>
+                        </div>
+                    ` : `
+                        <div style="background:#0f132a; padding:12px; border-radius:8px; text-align:center; color:#10b981; font-weight:600; margin-bottom:12px;">
+                            ✅ Ads complete! Enter your Binance UID below.
+                        </div>
+                        <label class="label">Binance UID (numeric)</label>
+                        <input type="text" id="binanceUidInput" class="wallet-input" placeholder="e.g. 123456789" inputmode="numeric" pattern="[0-9]*">
+                        <button class="btn btn-full btn-green mt-3" id="submitWithdrawBtn" onclick="submitWithdrawal()" ${!canWithdraw ? 'disabled' : ''}>
+                            ${canWithdraw ? '💸 Submit Withdrawal' : `Need $${minW.toFixed(2)} balance`}
+                        </button>
+                    `}
+                    
+                    <div class="info-box mt-3">
+                        <b>ℹ️ Withdrawal info:</b><br>
+                        • Watch ${adsNeeded} reward ads to unlock<br>
+                        • <b>Ads must be watched completely</b> — closing early doesn't count<br>
+                        • Ads must be viewed within 1 hour<br>
+                        • Payouts processed manually within 24-48h<br>
+                        • Min balance: $${minW.toFixed(2)} USDT
+                    </div>
+                `;
+            } catch (e) {
+                box.innerHTML = `<div class="info-box" style="border-left-color:#ef4444;"><b>❌ Connection failed</b><br>${Utils.sanitizeHTML(e.message)}</div>`;
+            }
+            
+            if (AppState._withdrawTimer) clearInterval(AppState._withdrawTimer);
+            AppState._withdrawTimer = setInterval(() => {
+                if (AppState.currentView === 'withdraw') loadWithdrawView();
+            }, 15000);
+        }
+        
+        async function watchWithdrawAd() {
+            const btn = document.getElementById('watchAdBtn');
+            if (btn) { btn.disabled = true; btn.textContent = '📺 Loading reward ad...'; }
+            
+            const result = await showRewardWithFallback();
+            if (!result.shown) {
+                Utils.showToast('❌ Ad failed to load — try again', 'error');
+                if (btn) { btn.disabled = false; btn.textContent = `📺 Watch Ad (${AppState.adCount}/${AppState.adsRequired})`; }
+                return;
+            }
+            
+            if (!result.rewarded) {
+                Utils.showToast('❌ Ad not completed — must watch to the end', 'error');
+                if (btn) { btn.disabled = false; btn.textContent = `📺 Watch Ad (${AppState.adCount}/${AppState.adsRequired})`; }
+                return;
+            }
+            
+            try {
+                const d = await apiCall('log_ad', { actionType: 'withdraw' });
+                if (d.success) {
+                    AppState.adCount = d.ad_count || (AppState.adCount + 1);
+                    Utils.showToast(`✅ Ad completed (${AppState.adCount}/${AppState.adsRequired})`);
+                    loadWithdrawView();
+                } else {
+                    Utils.showToast('Failed to log ad', 'error');
+                    if (btn) { btn.disabled = false; btn.textContent = `📺 Watch Ad (${AppState.adCount}/${AppState.adsRequired})`; }
+                }
+            } catch (e) {
+                Utils.showToast('Network error', 'error');
+                if (btn) { btn.disabled = false; btn.textContent = `📺 Watch Ad (${AppState.adCount}/${AppState.adsRequired})`; }
+            }
+        }
+        
+        async function submitWithdrawal() {
+            if (AppState.isSubmittingWithdraw) return;
+            const input = document.getElementById('binanceUidInput');
+            const uid = (input?.value || '').trim();
+            
+            if (!/^[0-9]{6,20}$/.test(uid)) {
+                Utils.showToast('Enter a valid Binance UID (6-20 digits)', 'error');
+                return;
+            }
+            
+            AppState.isSubmittingWithdraw = true;
+            const btn = document.getElementById('submitWithdrawBtn');
+            if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting...'; }
+            
+            try {
+                const d = await apiCall('request_withdraw', { binanceUid: uid });
+                if (d.success) {
+                    Utils.showToast(`✅ Withdrawal submitted: $${parseFloat(d.amount).toFixed(2)} USDT`);
+                    AppState.adCount = 0;
+                    setTimeout(() => loadWithdrawView(), 300);
+                    setTimeout(() => loadWithdrawView(), 1500);
+                } else {
+                    Utils.showToast(d.error || 'Failed', 'error');
+                    if (btn) { btn.disabled = false; btn.textContent = '💸 Submit Withdrawal'; }
+                }
+            } catch (e) {
+                Utils.showToast('Network error', 'error');
+                if (btn) { btn.disabled = false; btn.textContent = '💸 Submit Withdrawal'; }
+            } finally {
+                AppState.isSubmittingWithdraw = false;
+            }
+        }
+        
+        window.watchWithdrawAd = watchWithdrawAd;
+        window.submitWithdrawal = submitWithdrawal;
+        window.switchView = switchView;
+        
+        // ============ AD CONSENT ============
+        let pendingAdAction = null;
+        
+        function showAdConsent(action) {
+            pendingAdAction = action;
+            document.getElementById('adConsentOverlay').style.display = 'flex';
+        }
+        
+        function acceptAd() {
+            document.getElementById('adConsentOverlay').style.display = 'none';
+            if (pendingAdAction) {
+                const a = pendingAdAction; pendingAdAction = null;
+                showAdByBlockId(CONFIG.ADSGRAM_INTERSTITIAL_YES).then(() => processAfterAdAction(a));
+            }
+        }
+        
+        function declineAd() {
+            document.getElementById('adConsentOverlay').style.display = 'none';
+            if (pendingAdAction) {
+                const a = pendingAdAction; pendingAdAction = null;
+                showAdByBlockId(CONFIG.ADSGRAM_INTERSTITIAL_LATER).then(() => processAfterAdAction(a));
+            }
+        }
+        
+        function processAfterAdAction(action) {
+            switch(action) {
+                case 'createEmail': 
+                    logEmailAdView();
+                    createEmailDirectly(); 
+                    break;
+                case 'createCustomEmail': 
+                    logEmailAdView();
+                    executeCustomEmailCreation(); 
+                    break;
+                case 'changeDomain': 
+                    executeDomainChange(); 
+                    break;
+            }
+        }
+        
+        function logEmailAdView() {
+            if (!AppState.chatId) return;
+            fetch(`${CONFIG.PUBLIC_API}/referral.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'log_ad',
+                    actionType: 'email',
+                    chatId: AppState.chatId,
+                    deviceFp: getOrCreateDeviceFp()
+                })
+            }).catch(() => {});
+        }
+        
+        window.acceptAd = acceptAd;
+        window.declineAd = declineAd;
+        
+        // ============ DOMAIN FUNCTIONS ============
+        async function fetchAvailableDomains() {
+            try {
+                const ctrl = new AbortController();
+                const t = setTimeout(() => ctrl.abort(), 5000);
+                const r = await fetch(`${CONFIG.API_BASE_URL}/domains/${CONFIG.API_KEY}/free`, { signal: ctrl.signal, cache: 'no-store' });
+                clearTimeout(t);
+                const d = await r.json();
+                if (d.status && d.data?.domains && Array.isArray(d.data.domains)) {
+                    let free = d.data.domains.filter(x => x.type === 'Free' || x.type === 'free');
+                    if (free.length === 0) free = d.data.domains;
+                    AppState.availableDomains = free;
+                    return free;
+                }
+                return [];
+            } catch (e) { return []; }
+        }
+        
+        function populateDomainSelectors(domains) {
+            const s1 = document.getElementById('domainSelect');
+            const s2 = document.getElementById('customDomainSelect');
+            if (!s1 || !s2) return;
+            s1.innerHTML = ''; s2.innerHTML = '';
+            if (!domains || !domains.length) {
+                s1.innerHTML = '<option value="">No domains available</option>';
+                s2.innerHTML = '<option value="">No domains available</option>';
+                document.getElementById('changeDomainBtn').disabled = true;
+                document.getElementById('createCustomBtn').disabled = true;
+                return;
+            }
+            domains.forEach((d, i) => {
+                const name = d.domain || d.name || d;
+                const v = typeof name === 'string' ? name : String(name);
+                const o1 = document.createElement('option');
+                o1.value = v; o1.textContent = '@' + v;
+                if (AppState.currentDomain === v) o1.selected = true;
+                if (!AppState.currentDomain && i === 0) { o1.selected = true; AppState.currentDomain = v; }
+                s1.appendChild(o1);
+                const o2 = document.createElement('option');
+                o2.value = v; o2.textContent = '@' + v;
+                if (i === 0) o2.selected = true;
+                s2.appendChild(o2);
+            });
+            updateChangeDomainButton();
+            updateCustomCreateButton();
+        }
+        
+        async function loadDomains() {
+            const domains = await fetchAvailableDomains();
+            populateDomainSelectors(domains);
+            if (AppState.currentEmail && !AppState.currentDomain) {
+                const parts = AppState.currentEmail.split('@');
+                if (parts.length === 2) AppState.currentDomain = parts[1];
+            }
+        }
+        
+        function updateChangeDomainButton() {
+            const b = document.getElementById('changeDomainBtn');
+            if (b) b.disabled = !AppState.currentEmail || AppState.availableDomains.length === 0;
+        }
+        
+        function updateCustomCreateButton() {
+            const b = document.getElementById('createCustomBtn');
+            const u = document.getElementById('customUsername');
+            if (b && u) b.disabled = !Utils.isValidUsername(u.value.trim()) || AppState.availableDomains.length === 0;
+        }
+        
+        function handleChangeDomain() {
+            if (!AppState.currentEmail) { Utils.showToast('Create an email first', 'error'); return; }
+            const s = document.getElementById('domainSelect');
+            const nd = s.value;
+            if (!nd) { Utils.showToast('Select a domain', 'error'); return; }
+            if (AppState.currentEmail.split('@')[1] === nd) { Utils.showToast('Already using this domain', 'info'); return; }
+            AppState.pendingNewDomain = nd;
+            showAdConsent('changeDomain');
+        }
+        
+        async function executeDomainChange() {
+            const nd = AppState.pendingNewDomain;
+            if (!nd) return;
+            AppState.pendingNewDomain = null;
+            const user = AppState.currentEmail.split('@')[0];
+            const btn = document.getElementById('changeDomainBtn');
+            btn.disabled = true; btn.textContent = '⏳ Changing...';
+            try {
+                const r = await fetch(`${CONFIG.API_BASE_URL}/emails/${CONFIG.API_KEY}/${encodeURIComponent(AppState.currentEmail)}/${encodeURIComponent(user)}/${encodeURIComponent(nd)}`, { method: 'POST' });
+                const d = await r.json();
+                if (d.status && d.data) {
+                    AppState.currentEmail = d.data.email;
+                    AppState.currentDomain = nd;
+                    localStorage.setItem('tempEmail', AppState.currentEmail);
+                    displayEmailAddress();
+                    updateChangeDomainButton();
+                    startMessagePolling();
+                    Utils.showToast('✅ Domain changed');
+                } else Utils.showToast('Failed', 'error');
+            } catch (e) { Utils.showToast('Error', 'error'); }
+            finally { btn.disabled = false; btn.textContent = '🔄 Change'; }
+        }
+        
+        function handleCreateCustomEmail() {
+            const u = document.getElementById('customUsername').value.trim();
+            const d = document.getElementById('customDomainSelect').value;
+            if (!Utils.isValidUsername(u)) { Utils.showToast('Invalid username', 'error'); return; }
+            if (!d) { Utils.showToast('Select a domain', 'error'); return; }
+            AppState.pendingCustomUsername = u;
+            AppState.pendingCustomDomain = d;
+            showAdConsent('createCustomEmail');
+        }
+        
+        async function executeCustomEmailCreation() {
+            const u = AppState.pendingCustomUsername;
+            const d = AppState.pendingCustomDomain;
+            if (!u || !d) return;
+            AppState.pendingCustomUsername = null;
+            AppState.pendingCustomDomain = null;
+            if (AppState.currentEmail) await updateToCustomEmail(AppState.currentEmail, u, d);
+            else await createCustomEmailDirectly(u, d);
+        }
+        
+        async function updateToCustomEmail(oldEmail, u, d) {
+            const btn = document.getElementById('createCustomBtn');
+            btn.disabled = true; btn.textContent = '⏳ Updating...';
+            try {
+                const r = await fetch(`${CONFIG.API_BASE_URL}/emails/${CONFIG.API_KEY}/${encodeURIComponent(oldEmail)}/${encodeURIComponent(u)}/${encodeURIComponent(d)}`, { method: 'POST' });
+                const data = await r.json();
+                if (data.status && data.data) {
+                    AppState.currentEmail = data.data.email;
+                    AppState.currentDomain = d;
+                    localStorage.setItem('tempEmail', AppState.currentEmail);
+                    displayEmailAddress();
+                    startMessagePolling();
+                    document.getElementById('customUsername').value = '';
+                    Utils.showToast('✅ Updated');
+                } else Utils.showToast('Failed', 'error');
+            } catch (e) { Utils.showToast('Error', 'error'); }
+            finally { btn.disabled = false; btn.textContent = '✨ Create'; updateCustomCreateButton(); }
+        }
+        
+        async function createCustomEmailDirectly(u, d) {
+            const btn = document.getElementById('createCustomBtn');
+            btn.disabled = true; btn.textContent = '⏳ Creating...';
+            try {
+                const r = await fetch(`${CONFIG.API_BASE_URL}/emails/${CONFIG.API_KEY}`, { method: 'POST' });
+                const data = await r.json();
+                if (data.status && data.data) {
+                    const oldE = data.data.email;
+                    const r2 = await fetch(`${CONFIG.API_BASE_URL}/emails/${CONFIG.API_KEY}/${encodeURIComponent(oldE)}/${encodeURIComponent(u)}/${encodeURIComponent(d)}`, { method: 'POST' });
+                    const d2 = await r2.json();
+                    if (d2.status && d2.data) {
+                        AppState.currentEmail = d2.data.email;
+                        AppState.currentDomain = d;
+                    } else {
+                        AppState.currentEmail = oldE;
+                        AppState.currentDomain = data.data.domain;
+                    }
+                    localStorage.setItem('tempEmail', AppState.currentEmail);
+                    displayEmailAddress();
+                    await loadDomains();
+                    startMessagePolling();
+                    document.getElementById('customUsername').value = '';
+                    Utils.showToast('✅ Created');
+                    logEmailCreation(AppState.currentEmail);
+                }
+            } catch (e) { Utils.showToast('Error', 'error'); }
+            finally { btn.disabled = false; btn.textContent = '✨ Create'; updateCustomCreateButton(); }
+        }
+        
+        function toggleCustomSection() {
+            const s = document.getElementById('customEmailSection');
+            const b = document.getElementById('toggleCustomBtn');
+            if (s.style.display === 'none') { s.style.display = 'block'; b.style.display = 'none'; }
+        }
+        
+        function handleCreateEmail() { showAdConsent('createEmail'); }
+        
+        async function createEmailDirectly() {
+            const btn = document.getElementById('createBtn');
+            btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Creating...';
+            try {
+                const r = await fetch(`${CONFIG.API_BASE_URL}/emails/${CONFIG.API_KEY}`, { method: 'POST' });
+                const d = await r.json();
+                AppState.currentEmail = d.data.email;
+                AppState.currentDomain = d.data.domain;
+                localStorage.setItem('tempEmail', AppState.currentEmail);
+                displayEmailAddress();
+                await loadDomains();
+                startMessagePolling();
+                Utils.showToast('✅ Created');
+                logEmailCreation(AppState.currentEmail);
+            } catch (e) { Utils.showToast('Failed', 'error'); }
+            finally { btn.disabled = false; btn.innerHTML = '📨 Generate Random Email'; }
+        }
+        
+        function logEmailCreation(email) {
+            if (!AppState.chatId) return;
+            fetch(`${CONFIG.PUBLIC_API}/referral.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'log_email',
+                    chatId: AppState.chatId,
+                    email: email,
+                    deviceFp: getOrCreateDeviceFp()
+                })
+            }).catch(() => {});
+        }
+        
+        async function handleDeleteEmail() {
+            if (!AppState.currentEmail || !confirm('Delete this email?')) return;
+            stopMessagePolling();
+            try { await fetch(`${CONFIG.API_BASE_URL}/emails/${CONFIG.API_KEY}/${AppState.currentEmail}`, { method: 'DELETE' }); } catch(e) {}
+            AppState.currentEmail = null;
+            AppState.currentDomain = null;
+            AppState.messageList = [];
+            localStorage.removeItem('tempEmail');
+            hideEmailAddress();
+            displayMessageList();
+            Utils.showToast('Email deleted');
+        }
+        
+        function copyEmailToClipboard() {
+            if (!AppState.currentEmail) return;
+            navigator.clipboard.writeText(AppState.currentEmail).then(() => Utils.showToast('Copied!')).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = AppState.currentEmail;
+                document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+                document.body.removeChild(ta); Utils.showToast('Copied!');
+            });
+        }
+        
+        function displayEmailAddress() {
+            document.getElementById('emailSection').style.display = 'block';
+            document.getElementById('emailText').textContent = AppState.currentEmail;
+            document.getElementById('deleteBtn').style.display = 'block';
+            document.getElementById('customEmailSection').style.display = 'none';
+            document.getElementById('toggleCustomBtn').style.display = 'block';
+            if (AppState.currentDomain) {
+                const s = document.getElementById('domainSelect');
+                for (let i = 0; i < s.options.length; i++) {
+                    if (s.options[i].value === AppState.currentDomain) { s.selectedIndex = i; break; }
+                }
+            }
+            updateChangeDomainButton();
+        }
+        
+        function hideEmailAddress() {
+            document.getElementById('emailSection').style.display = 'none';
+            document.getElementById('deleteBtn').style.display = 'none';
+            document.getElementById('toggleCustomBtn').style.display = 'none';
+            document.getElementById('customEmailSection').style.display = 'block';
+        }
+        
+        async function fetchMessages() {
+            try {
+                const r = await fetch(`${CONFIG.API_BASE_URL}/messages/${CONFIG.API_KEY}/${encodeURIComponent(AppState.currentEmail)}`, { cache: 'no-store' });
+                if (r.ok) { const d = await r.json(); if (d.status && Array.isArray(d.messages)) return d.messages; }
+            } catch(e) {}
+            try {
+                const f = new FormData(); f.append('email', AppState.currentEmail);
+                const r = await fetch('https://tempmail44.com/get_messages', { method: 'POST', body: f, cache: 'no-store' });
+                const d = await r.json();
+                return d.messages || d.data?.messages || [];
+            } catch(e) { return []; }
+        }
+        
+        async function fetchMessageContent(hash) {
+            try {
+                const r = await fetch(`https://tempmail44.com/view/${hash}`, { cache: 'no-store' });
+                if (r.ok) {
+                    const html = await r.text();
+                    const doc = new DOMParser().parseFromString(html, 'text/html');
+                    let subject = '', from = '', body = '';
+                    const h1 = doc.querySelector('h1'), h2 = doc.querySelector('h2'), titleEl = doc.querySelector('title');
+                    if (h1) subject = h1.textContent.trim();
+                    else if (h2) subject = h2.textContent.trim();
+                    else if (titleEl) subject = titleEl.textContent.replace('TempMail44', '').replace(' - ', '').trim();
+                    const fEl = doc.querySelector('[class*="from"], [class*="sender"]');
+                    if (fEl) from = fEl.textContent.trim();
+                    const sel = ['.message-body', '.email-body', '.body', '.content', '.message-content', 'article', 'main'];
+                    for (const s of sel) { const el = doc.querySelector(s); if (el && el.textContent.trim().length > 10) { body = el.innerHTML; break; } }
+                    if (!body || body.length < 10) {
+                        doc.querySelectorAll('script, style, nav, header, footer, link, meta').forEach(el => el.remove());
+                        body = doc.body?.innerHTML || html;
+                    }
+                    body = body.replace(/<a /g, '<a target="_blank" rel="noopener noreferrer" ');
+                    return { subject: subject || 'No Subject', from: from || 'Unknown', body: body || html };
+                }
+            } catch(e) {}
+            return null;
+        }
+        
+        async function handleRefreshMessages() {
+            const b = document.getElementById('refreshBtn');
+            b.disabled = true; b.innerHTML = '<span class="spinner"></span> Refreshing...';
+            await loadAndDisplayMessages();
+            b.disabled = false; b.innerHTML = '🔄 Refresh';
+        }
+        
+        async function loadAndDisplayMessages() {
+            if (!AppState.currentEmail) { displayMessageList(); return; }
+            document.getElementById('messageList').innerHTML = '<div class="text-center" style="padding:30px"><div class="spinner"></div><p style="color:#94a3b8;">Loading...</p></div>';
+            try { AppState.messageList = await fetchMessages(); displayMessageList(); } catch(e) {
+                document.getElementById('messageList').innerHTML = '<div class="card empty-state"><div class="empty-state-icon">❌</div><p>Failed to load</p></div>';
+            }
+        }
+        
+        function displayMessageList() {
+            const l = document.getElementById('messageList');
+            if (!AppState.currentEmail) { l.innerHTML = '<div class="card empty-state"><div class="empty-state-icon">📭</div><p>Create a temporary email address to start receiving messages</p></div>'; return; }
+            if (!AppState.messageList || !AppState.messageList.length) { l.innerHTML = '<div class="card empty-state"><div class="empty-state-icon">📭</div><p>No messages yet. Waiting for incoming emails...</p></div>'; return; }
+            AppState.messageList.sort((a,b) => new Date(b.time||b.created_at||0) - new Date(a.time||a.created_at||0));
+            l.innerHTML = '';
+            AppState.messageList.forEach(m => {
+                const h = m.hash || m.id || '';
+                const c = document.createElement('div'); c.className = 'card';
+                c.innerHTML = `<span class="date">${Utils.formatRelativeDate(m.time||m.created_at)}</span><div class="subject">${Utils.sanitizeHTML(Utils.safeString(m.subject)||'No Subject')}</div><div class="from">👤 ${Utils.sanitizeHTML(Utils.safeString(m.from||m.from_email)||'Unknown')}</div><div class="action-row"><button class="btn btn-sm view-btn" data-hash="${Utils.sanitizeHTML(h)}">📖 View</button><button class="btn btn-sm btn-danger delete-btn" data-hash="${Utils.sanitizeHTML(h)}">🗑️ Delete</button></div>`;
+                l.appendChild(c);
+            });
+            document.querySelectorAll('.view-btn').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); openMessageInModal(b.dataset.hash); }));
+            document.querySelectorAll('.delete-btn').forEach(b => b.addEventListener('click', async e => { e.stopPropagation(); await handleDeleteMessage(b.dataset.hash); }));
+        }
+        
+        async function openMessageInModal(hash) {
+            if (!hash) return;
+            AppState.currentMessageHash = hash;
+            document.getElementById('modalSubject').textContent = 'Loading...';
+            document.getElementById('modalMeta').innerHTML = '';
+            document.getElementById('modalBody').innerHTML = '<div style="text-align:center;padding:20px;color:#64748b;"><div class="spinner"></div><p style="margin-top:12px;">Loading...</p></div>';
+            document.getElementById('messageModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            if (window.Telegram?.WebApp) try { window.Telegram.WebApp.expand(); } catch(e) {}
+            
+            const cached = AppState.messageList.find(m => (m.hash||m.id) === hash);
+            if (cached) {
+                document.getElementById('modalSubject').textContent = Utils.safeString(cached.subject)||'No Subject';
+                document.getElementById('modalMeta').innerHTML = `<div>👤 <strong>From:</strong> ${Utils.sanitizeHTML(Utils.safeString(cached.from||cached.from_email)||'Unknown')}</div><div>🕒 <strong>Date:</strong> ${Utils.formatFullDate(cached.time||cached.created_at)}</div>`;
+            }
+            
+            const full = await fetchMessageContent(hash);
+            if (AppState.currentMessageHash === hash && full) {
+                if (full.subject) document.getElementById('modalSubject').textContent = full.subject;
+                document.getElementById('modalMeta').innerHTML = `<div>👤 <strong>From:</strong> ${Utils.sanitizeHTML(full.from||'Unknown')}</div>`;
+                let cb = full.body || '';
+                if (cb.length > 10) cb = Utils.cleanEmailBody(cb);
+                else cb = '<div style="text-align:center;padding:40px;color:#64748b;"><p>📭 No content</p></div>';
+                const mb = document.getElementById('modalBody');
+                mb.innerHTML = cb;
+                requestAnimationFrame(() => { Utils.trimModalBodyWhitespace(mb); setTimeout(() => Utils.trimModalBodyWhitespace(mb), 120); });
+            }
+        }
+        
+        async function handleDeleteMessage(hash) {
+            if (!hash || !confirm('Delete this message?')) return;
+            try { await fetch(`${CONFIG.API_BASE_URL}/messages/${CONFIG.API_KEY}/${hash}`, { method: 'DELETE' }); } catch(e) {}
+            AppState.messageList = AppState.messageList.filter(m => (m.hash||m.id) !== hash);
+            displayMessageList();
+            Utils.showToast('Deleted');
+        }
+        
+        async function handleDeleteCurrentMessage() { if (AppState.currentMessageHash) { await handleDeleteMessage(AppState.currentMessageHash); closeMessageModal(); } }
+        function closeMessageModal() {
+            document.getElementById('messageModal').classList.remove('active');
+            AppState.currentMessageHash = null;
+            document.body.style.overflow = '';
+        }
+        function handleModalOverlayClick(e) { if (e.target === document.getElementById('messageModal')) closeMessageModal(); }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('messageModal').classList.contains('active')) closeMessageModal();
+        });
+        
+        function startMessagePolling() {
+            stopMessagePolling();
+            loadAndDisplayMessages();
+            AppState.pollInterval = setInterval(() => { if (AppState.currentEmail) loadAndDisplayMessages(); }, CONFIG.POLL_INTERVAL);
+        }
+        function stopMessagePolling() {
+            if (AppState.pollInterval) { clearInterval(AppState.pollInterval); AppState.pollInterval = null; }
+        }
+        
+        function setupCustomUsernameHandler() {
+            const u = document.getElementById('customUsername');
+            if (u) {
+                u.addEventListener('input', () => updateCustomCreateButton());
+                u.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && !document.getElementById('createCustomBtn').disabled) handleCreateCustomEmail();
+                });
+            }
+        }
+        
+        function initializeApp() {
+            if (AppState.initialized) return;
+            AppState.initialized = true;
+            
+            initializeAdsGram();
+            getOrCreateDeviceFp();
+            
+            loadDomains();
+            setupCustomUsernameHandler();
+            setInterval(loadDomains, 300000);
+            
+            window.handleCreateEmail = handleCreateEmail;
+            window.handleDeleteEmail = handleDeleteEmail;
+            window.copyEmailToClipboard = copyEmailToClipboard;
+            window.handleRefreshMessages = handleRefreshMessages;
+            window.handleDeleteCurrentMessage = handleDeleteCurrentMessage;
+            window.closeMessageModal = closeMessageModal;
+            window.handleModalOverlayClick = handleModalOverlayClick;
+            window.handleChangeDomain = handleChangeDomain;
+            window.handleCreateCustomEmail = handleCreateCustomEmail;
+            window.toggleCustomSection = toggleCustomSection;
+            window.acceptAd = acceptAd;
+            window.declineAd = declineAd;
+            window.switchView = switchView;
+            
+            const savedEmail = localStorage.getItem('tempEmail');
+            if (savedEmail) {
+                AppState.currentEmail = savedEmail;
+                const parts = savedEmail.split('@');
+                if (parts.length === 2) AppState.currentDomain = parts[1];
+                displayEmailAddress();
+                startMessagePolling();
+            } else {
+                hideEmailAddress();
+                loadAndDisplayMessages();
+            }
+            
+            setTimeout(registerCurrentUser, 1500);
+
+            // ✅ Show promo popup 1 second after app init
+            setTimeout(showPromo, 1000);
+        }
+        
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            setTimeout(initializeApp, 1);
+        } else {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        }
+        
+        if (window.Telegram?.WebApp) {
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.expand();
+        }
+    </script>
+</body>
+</html>
